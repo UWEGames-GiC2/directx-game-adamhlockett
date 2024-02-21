@@ -159,6 +159,8 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects.push_back(m_TPScam);
 
     //add first person camera
+    m_FPScam = new FPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 0.0f, 0.1f));
+    m_GameObjects.push_back(m_FPScam);
 
     //test all GPGOs
     /*float* params = new float[3];

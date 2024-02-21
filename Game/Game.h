@@ -22,6 +22,7 @@ class GameObject;
 class GameObject2D;
 class Camera;
 class TPSCamera;
+class FPSCamera;
 class Light;
 class Sound;
 

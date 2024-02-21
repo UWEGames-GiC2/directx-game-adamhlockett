@@ -156,6 +156,9 @@
     <ClInclude Include="GPGO.h">
       <Filter>GameObjects\3D\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FPSCamera.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="GPGO.cpp">
       <Filter>GameObjects\3D\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCamera.cpp">
+      <Filter>Base\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

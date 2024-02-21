@@ -7,6 +7,7 @@
 #include "gameobject.h"
 #include "camera.h"
 #include "TPSCamera.h"
+#include "FPSCamera.h"
 #include "CMOGO.h"
 #include "Tree.h"
 #include "Terrain.h"

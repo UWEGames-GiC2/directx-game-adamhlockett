@@ -10,7 +10,7 @@ Player::Player(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF)
 
 	m_pos.y = 10.0f;
 
-	SetDrag(0);
+	SetDrag(2);
 	SetPhysicsOn(true);
 }
 
@@ -20,39 +20,40 @@ Player::~Player()
 }
 
 
-void Player::Tick(GameData* _GD)
+void Player::Tick(GameData* _GameData)
 {
-	switch (_GD->m_GS)
+	switch (_GameData->m_GS)
 	{
 		case GS_PLAY_MAIN_CAM:
 		{
 			//MOUSE CONTROL SCHEME HERE
-			float speed = 10.0f;
-			m_acc.x += speed * _GD->m_MS.x;
-			m_acc.z += speed * _GD->m_MS.y;
-			break;
+			//float speed = 10.0f;
+			//m_acc.x += speed * _GameData->m_MS.x;
+			//m_acc.z += speed * _GameData->m_MS.y;
+			//break;
 		}
-		case GS_PLAY_TPS_CAM:
+		case GS_PLAY_FPS_CAM:
 		{
 			//TURN AND FORWARD CONTROL HERE
-			Vector3 forwardMove = 40.0f * Vector3::Forward;
-			Vector3 sidewardMove = 40.0f * Vector3::Left;
+			float speed = 25.0f;
+			Vector3 forwardMove = speed * Vector3::Forward;
+			Vector3 sidewardMove = speed * Vector3::Left;
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
-			if (_GD->m_KBS.W)
+			if (_GameData->m_KBS.W)
 			{
 				m_acc += forwardMove;
 			}
-			if (_GD->m_KBS.S)
+			if (_GameData->m_KBS.S)
 			{
 				m_acc -= forwardMove;
 			}
-			if (_GD->m_KBS.A)
+			if (_GameData->m_KBS.A)
 			{
 				m_acc += sidewardMove;
 			}
-			if (_GD->m_KBS.D)
+			if (_GameData->m_KBS.D)
 			{
 				m_acc -= sidewardMove;
 			}
@@ -61,8 +62,10 @@ void Player::Tick(GameData* _GD)
 	}
 
 	//change orinetation of player
-	float rotSpeed = 2.0f * _GD->m_dt;
-	m_yaw -= rotSpeed * _GD->m_MS.x;
+	float sensitivity = 0.5f;
+	float rotSpeed = sensitivity * _GameData->m_dt;
+	m_yaw -= rotSpeed * _GameData->m_MS.x;
+	m_pitch -= rotSpeed * _GameData->m_MS.y;
 	//if (_GD->m_KBS.A)
 	//{
 	//	m_yaw += rotSpeed;
@@ -73,12 +76,12 @@ void Player::Tick(GameData* _GD)
 	//}
 
 	//move player up and down
-	if (_GD->m_KBS.R)
+	if (_GameData->m_KBS.R)
 	{
 		m_acc.y += 40.0f;
 	}
 
-	if (_GD->m_KBS.F)
+	if (_GameData->m_KBS.F)
 	{
 		m_acc.y -= 40.0f;
 	}
@@ -94,5 +97,5 @@ void Player::Tick(GameData* _GD)
 	}
 
 	//apply my base behaviour
-	CMOGO::Tick(_GD);
+	CMOGO::Tick(_GameData);
 }
