@@ -93,6 +93,7 @@ private:
     //Basic 3D renderers
     Camera* m_cam = NULL; //principle camera
     TPSCamera* m_TPScam = NULL;//TPS cam
+    FPSCamera* m_FPScam = NULL;//FPS cam
     Light* m_light = NULL; //base light
 
     //required for the CMO model rendering system

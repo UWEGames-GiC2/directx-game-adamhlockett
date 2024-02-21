@@ -52,6 +52,7 @@ public:
 	void		TogglePhysics() { m_physicsOn = !m_physicsOn; }
 	void		SetDrag(float _drag) { m_drag = _drag; }
 
+	bool isRendered = true;
 
 protected:
 
@@ -68,6 +69,7 @@ protected:
 	float m_drag = 0.0f;
 	Vector3 m_vel = Vector3::Zero;
 	Vector3 m_acc = Vector3::Zero;
+	
 };
 
 #endif
