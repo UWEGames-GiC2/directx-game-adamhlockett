@@ -12,6 +12,7 @@
 #include "DrawData.h"
 #include "DrawData2D.h"
 #include "ObjectList.h"
+#include <iostream>
 
 extern void ExitGame() noexcept;
 
@@ -236,13 +237,13 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects2D.push_back(text);*/
 
     //Test Sounds
-    Loop* loop = new Loop(m_audioEngine.get(), "NightAmbienceSimple_02");
-    loop->SetVolume(0.1f);
-    loop->Play();
-    m_Sounds.push_back(loop);
-
-    TestSound* TS = new TestSound(m_audioEngine.get(), "Explo1");
-    m_Sounds.push_back(TS);
+    //Loop* loop = new Loop(m_audioEngine.get(), "NightAmbienceSimple_02");
+    //loop->SetVolume(0.1f);
+    //loop->Play();
+    //m_Sounds.push_back(loop);
+    //
+    //TestSound* TS = new TestSound(m_audioEngine.get(), "Explo1");
+    //m_Sounds.push_back(TS);
 }
 
 // Executes the basic game loop.
@@ -281,18 +282,37 @@ void Game::Update(DX::StepTimer const& _timer)
 
     ReadInput();
     //upon space bar switch camera state
-    //see docs here for what's going on: https://github.com/Microsoft/DirectXTK/wiki/Keyboard
-    if (m_GD->m_KBS_tracker.pressed.Space)
+    //if (m_GD->m_KBS_tracker.pressed.Space)
+    //{
+    //
+    //    //if (m_GD->m_GS == GS_PLAY_MAIN_CAM)
+    //    //{
+    //    //    m_GD->m_GS = GS_PLAY_FPS_CAM;
+    //    //}
+    //    //else
+    //    //{
+    //    //    m_GD->m_GS = GS_PLAY_MAIN_CAM;
+    //    //}
+    //}
+    cursor_timer += m_GD->m_dt * cursor_timer_increment;
+    if (m_GD->m_KBS_tracker.pressed.Tab)
     {
-        if (m_GD->m_GS == GS_PLAY_MAIN_CAM)
-        {
-            m_GD->m_GS = GS_PLAY_FPS_CAM;
-        }
-        else
-        {
-            m_GD->m_GS = GS_PLAY_MAIN_CAM;
+        if (cursor_timer > cursor_reset_at) cursor_timer == 10.1f;
+
+        if (cursor_timer >= cursor_reset_at) {
+            switch (m_GD->cursorShowing) {
+                case true:
+                    m_GD->cursorShowing = false;
+                    break;
+                case false:
+                    m_GD->cursorShowing = true;
+                    break;
+            }
+            cursor_timer = 0.0f;
         }
     }
+    if (m_GD->cursorShowing) ShowCursor(true);
+    else ShowCursor(false);
 
     //update all objects
     for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
@@ -320,11 +340,11 @@ void Game::Render()
     m_DD->m_pd3dImmediateContext = m_d3dContext.Get();
 
     //set which camera to be used
-    m_DD->m_cam = m_cam;
-    if (m_GD->m_GS == GS_PLAY_FPS_CAM)
-    {
+    //m_DD->m_cam = m_cam;
+    //if (m_GD->m_GS == GS_PLAY_FPS_CAM)
+    //{
         m_DD->m_cam = m_FPScam;
-    }
+    //}
 
     //update the constant buffer for the rendering of VBGOs
     VBGO::UpdateConstantBuffer(m_DD);
@@ -422,8 +442,8 @@ void Game::OnWindowSizeChanged(int _width, int _height)
 void Game::GetDefaultSize(int& _width, int& _height) const noexcept
 {
     // TODO: Change to desired default window size (note minimum size is 320x200).
-    _width = 800;
-    _height = 600;
+    _width = 1280;
+    _height = 1024;
 }
 
 // These are the resources that depend on the device.
@@ -621,5 +641,7 @@ void Game::ReadInput()
     //lock the cursor to the centre of the window
     RECT window;
     GetWindowRect(m_window, &window);
-    SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
+    if (!m_GD->cursorShowing) {
+        SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
+    }
 }

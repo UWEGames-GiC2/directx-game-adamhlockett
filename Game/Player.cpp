@@ -41,31 +41,56 @@ void Player::Tick(GameData* _GameData)
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
-			if (_GameData->m_KBS.W)
-			{
+
+			auto kb = Keyboard::Get().GetState();
+			if (!_GameData->cursorShowing) {
+			//auto kb1 = _GameData->m_KBS_tracker.GetLastState();
+			if (kb.W) {
 				m_acc += forwardMove;
 			}
-			if (_GameData->m_KBS.S)
-			{
+			if (kb.S) {
 				m_acc -= forwardMove;
 			}
-			if (_GameData->m_KBS.A)
-			{
+			if (kb.A) {
 				m_acc += sidewardMove;
 			}
-			if (_GameData->m_KBS.D)
-			{
+			if (kb.D) {
 				m_acc -= sidewardMove;
 			}
+			if (kb.Space) {
+				m_acc.y += 20.0f;
+			}
+
+			m_acc.y -= 5.0f; // gravity
+
+			float sensitivity = 0.5f;
+			float rotSpeed = sensitivity * _GameData->m_dt;
+				m_yaw -= rotSpeed * _GameData->m_MS.x;
+				m_pitch -= rotSpeed * _GameData->m_MS.y;
+			}
+
+			//if (_GameData->m_KBS.W)
+			//{
+			//	m_acc += forwardMove;
+			//}
+			//if (_GameData->m_KBS.S)
+			//{
+			//	m_acc -= forwardMove;
+			//}
+			//if (_GameData->m_KBS.A)
+			//{
+			//	m_acc += sidewardMove;
+			//}
+			//if (_GameData->m_KBS.D)
+			//{
+			//	m_acc -= sidewardMove;
+			//}
 			break;
 		}
 	}
 
 	//change orinetation of player
-	float sensitivity = 0.5f;
-	float rotSpeed = sensitivity * _GameData->m_dt;
-	m_yaw -= rotSpeed * _GameData->m_MS.x;
-	m_pitch -= rotSpeed * _GameData->m_MS.y;
+	
 	//if (_GD->m_KBS.A)
 	//{
 	//	m_yaw += rotSpeed;
@@ -76,15 +101,15 @@ void Player::Tick(GameData* _GameData)
 	//}
 
 	//move player up and down
-	if (_GameData->m_KBS.R)
-	{
-		m_acc.y += 40.0f;
-	}
-
-	if (_GameData->m_KBS.F)
-	{
-		m_acc.y -= 40.0f;
-	}
+	//if (_GameData->m_KBS.R)
+	//{
+	//	m_acc.y += 40.0f;
+	//}
+	//
+	//if (_GameData->m_KBS.F)
+	//{
+	//	m_acc.y -= 40.0f;
+	//}
 
 	//limit motion of the player
 	float length = m_pos.Length();

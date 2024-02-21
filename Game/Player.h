@@ -14,6 +14,7 @@ public:
 	~Player();
 
 	virtual void Tick(GameData* _GD) override;
+	
 
 protected:
 

@@ -57,6 +57,7 @@ public:
     // Properties
     void GetDefaultSize( int& _width, int& _height ) const noexcept;
 
+
 private:
 
     void Update(DX::StepTimer const& _timer);
@@ -114,4 +115,8 @@ private:
 	//See here: https://github.com/Microsoft/DirectXTK/wiki/Creating-and-playing-sounds Using wave banks Section
     std::unique_ptr<DirectX::AudioEngine> m_audioEngine;
     list<Sound*>m_Sounds;
+
+    float cursor_reset_at = 10.0f;
+    float cursor_timer = cursor_reset_at;
+    float cursor_timer_increment = 1.0f;
 };
