@@ -29,23 +29,13 @@ Game::Game() noexcept :
 }
 
 // Initialize the Direct3D resources required to run.
-void Game::Initialize(HWND _window, int _width, int _height)
-{
+void Game::InitMenu(HWND _window, int _width, int _height) {
     m_window = _window;
     m_outputWidth = std::max(_width, 1);
     m_outputHeight = std::max(_height, 1);
-
     CreateDevice();
 
     CreateResources();
-
-    // TODO: Change the timer settings if you want something other than the default variable timestep mode.
-    // e.g. for 60 FPS fixed timestep update logic, call:
-    /*
-    m_timer.SetFixedTimeStep(true);
-
-    m_timer.SetTargetElapsedSeconds(1.0 / 60);
-    */
 
     //seed the random number generator
     srand((UINT)time(NULL));
@@ -59,11 +49,10 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //Hide the mouse pointer
     ShowCursor(false);
 
-    //create GameData struct and populate its pointers
     m_GD = new GameData;
-    m_GD->m_GS = GS_PLAY_MAIN_CAM;
 
-    //set up systems for 2D rendering
+    m_GD->m_GS = GS_MENU;
+
     m_DD2D = new DrawData2D();
     m_DD2D->m_Sprites.reset(new SpriteBatch(m_d3dContext.Get()));
     m_DD2D->m_Font.reset(new SpriteFont(m_d3dDevice.Get(), L"..\\Assets\\italic.spritefont"));
@@ -83,6 +72,73 @@ void Game::Initialize(HWND _window, int _width, int _height)
 #endif
     m_audioEngine = std::make_unique<AudioEngine>(eflags);
 
+    float AR = (float)_width / (float)_height;
+
+    m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
+    m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
+    m_MenuObjects.push_back(m_cam);
+
+    m_DD = new DrawData;
+    m_DD->m_pd3dImmediateContext = nullptr;
+    m_DD->m_states = m_states;
+    m_DD->m_cam = m_cam;
+    m_DD->m_light = m_light;
+
+}
+
+void Game::Initialize(HWND _window, int _width, int _height)
+{
+    //m_window = _window;
+    //m_outputWidth = std::max(_width, 1);
+    //m_outputHeight = std::max(_height, 1);
+    //
+    //CreateDevice();
+    //
+    //CreateResources();
+    // TODO: Change the timer settings if you want something other than the default variable timestep mode.
+    // e.g. for 60 FPS fixed timestep update logic, call:
+    /*
+    m_timer.SetFixedTimeStep(true);
+
+    m_timer.SetTargetElapsedSeconds(1.0 / 60);
+    */
+    ////seed the random number generator
+    //srand((UINT)time(NULL));
+    //
+    ////set up keyboard and mouse system
+    ////documentation here: https://github.com/microsoft/DirectXTK/wiki/Mouse-and-keyboard-input
+    //m_keyboard = std::make_unique<Keyboard>();
+    //m_mouse = std::make_unique<Mouse>();
+    //m_mouse->SetWindow(_window);
+    //m_mouse->SetMode(Mouse::MODE_RELATIVE);
+    ////Hide the mouse pointer
+    //ShowCursor(false);
+    //create GameData struct and populate its pointers
+    //m_GD = new GameData;
+    //
+    //
+    //m_GD->m_GS = GS_MENU;
+    //when actual game starts
+    //m_GD->m_GS = GS_PLAY_FPS_CAM;
+    //set up systems for 2D rendering
+//    m_DD2D = new DrawData2D();
+//    m_DD2D->m_Sprites.reset(new SpriteBatch(m_d3dContext.Get()));
+//    m_DD2D->m_Font.reset(new SpriteFont(m_d3dDevice.Get(), L"..\\Assets\\italic.spritefont"));
+//    m_states = new CommonStates(m_d3dDevice.Get());
+//
+//    //set up DirectXTK Effects system
+//    m_fxFactory = new EffectFactory(m_d3dDevice.Get());
+//    //Tell the fxFactory to look to the correct build directory to pull stuff in from
+//    ((EffectFactory*)m_fxFactory)->SetDirectory(L"..\\Assets");
+//    //init render system for VBGOs
+//    VBGO::Init(m_d3dDevice.Get());
+//
+//    //set audio system
+//    AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
+//#ifdef _DEBUG
+//    eflags = eflags | AudioEngine_Debug;
+//#endif
+//    m_audioEngine = std::make_unique<AudioEngine>(eflags);
     //create a set of dummy things to show off the engine
 
     //create a base light
@@ -90,7 +146,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects.push_back(m_light);
 
     //find how big my window is to correctly calculate my aspect ratio
-    float AR = (float)_width / (float)_height;
+    //float AR = (float)_width / (float)_height;
 
     //example basic 3D stuff
     //Terrain* terrain = new Terrain("table", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, 0.25f * Vector3::One);
@@ -111,8 +167,9 @@ void Game::Initialize(HWND _window, int _width, int _height)
 
     VBCube* cube = new VBCube();
     cube->init(11, m_d3dDevice.Get());
-    cube->SetPos(Vector3(100.0f, 0.0f, 0.0f));
-    cube->SetScale(4.0f);
+    cube->SetPos(Vector3(0.0f, -10.0f, 0.0f));
+    cube->SetScale(10.0f, 0.1f, 10.0f);
+
     m_GameObjects.push_back(cube);
 
     /*VBSpike* spikes = new VBSpike();
@@ -151,15 +208,17 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects.push_back(pPlayer);
 
     //create a base camera
-    m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
-    m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
-    m_GameObjects.push_back(m_cam);
-
-    //add a secondary camera
-    m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 100.0f, 50.0f));
-    m_GameObjects.push_back(m_TPScam);
+    //m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
+    //m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
+    //m_GameObjects.push_back(m_cam);
+    //
+    ////add a secondary camera
+    //m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 100.0f, 50.0f));
+    //m_GameObjects.push_back(m_TPScam);
 
     //add first person camera
+    float AR = (float)_width / (float)_height;
+
     m_FPScam = new FPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 0.0f, 0.1f));
     m_GameObjects.push_back(m_FPScam);
 
@@ -215,13 +274,11 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects.push_back(pGPGO);*/
 
     //create DrawData struct and populate its pointers
-    m_DD = new DrawData;
-    m_DD->m_pd3dImmediateContext = nullptr;
-    m_DD->m_states = m_states;
-    m_DD->m_cam = m_cam;
-    m_DD->m_light = m_light;
-
-    
+    //m_DD = new DrawData;
+    //m_DD->m_pd3dImmediateContext = nullptr;
+    //m_DD->m_states = m_states;
+    //m_DD->m_cam = m_cam;
+    //m_DD->m_light = m_light;
 
     //example basic 2D stuff
     /*ImageGO2D* logo = new ImageGO2D("logo_small", m_d3dDevice.Get());
@@ -249,12 +306,60 @@ void Game::Initialize(HWND _window, int _width, int _height)
 // Executes the basic game loop.
 void Game::Tick()
 {
+    if (m_GD->m_GS == GS_MENU) {
+        m_timer.Tick([&]() 
+        {
+            MenuUpdate(m_timer);
+        });
+    }
+    else if (m_GD->m_GS == GS_PLAY_MAIN_CAM || 
+        m_GD->m_GS == GS_PLAY_FPS_CAM || 
+        m_GD->m_GS == GS_PLAY_TPS_CAM)
     m_timer.Tick([&]()
     {
         Update(m_timer);
     });
 
     Render();
+}
+
+void Game::MenuUpdate(DX::StepTimer const& _timer) 
+{
+    float elapsedTime = float(_timer.GetElapsedSeconds());
+    m_GD->m_dt = elapsedTime;
+
+    if (!m_audioEngine->Update())
+    {
+        if (m_audioEngine->IsCriticalError())
+        {
+            // We lost the audio device!
+        }
+    }
+    else
+    {
+        //update sounds playing
+        for (list<Sound*>::iterator it = m_Sounds.begin(); it != m_Sounds.end(); it++)
+        {
+            (*it)->Tick(m_GD);
+        }
+    }
+
+    ReadInput();
+
+    m_GD->cursorShowing = true;
+
+    if (m_GD->cursorShowing) ShowCursor(true);
+    else ShowCursor(false);
+
+    for (list<GameObject*>::iterator it = m_MenuObjects.begin(); it != m_MenuObjects.end(); it++)
+    {
+        (*it)->Tick(m_GD);
+    }
+
+    for (list<GameObject2D*>::iterator it = m_MenuObjects2D.begin(); it != m_MenuObjects2D.end(); it++)
+    {
+        (*it)->Tick(m_GD);
+    }
 }
 
 // Updates the world.
@@ -341,10 +446,10 @@ void Game::Render()
 
     //set which camera to be used
     //m_DD->m_cam = m_cam;
-    //if (m_GD->m_GS == GS_PLAY_FPS_CAM)
-    //{
+    if (m_GD->m_GS == GS_PLAY_FPS_CAM)
+    {
         m_DD->m_cam = m_FPScam;
-    //}
+    }
 
     //update the constant buffer for the rendering of VBGOs
     VBGO::UpdateConstantBuffer(m_DD);

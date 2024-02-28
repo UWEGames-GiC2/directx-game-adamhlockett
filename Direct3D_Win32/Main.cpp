@@ -106,7 +106,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance, _In_opt_ HINSTANCE _hPrevInstance
 
         GetClientRect(hwnd, &rc);
 
-        g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
+        g_game->InitMenu(hwnd, rc.right - rc.left, rc.bottom - rc.top);
     }
 
     // Main message loop

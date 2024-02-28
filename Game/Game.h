@@ -42,6 +42,7 @@ public:
     Game& operator= (Game const&) = delete;
 
     // Initialization and management
+    void InitMenu(HWND _window, int _width, int _height);
     void Initialize(HWND _window, int _width, int _height);
 
     // Basic game loop
@@ -60,6 +61,7 @@ public:
 
 private:
 
+    void MenuUpdate(DX::StepTimer const& _timer);
     void Update(DX::StepTimer const& _timer);
     void Render();
 
@@ -108,8 +110,11 @@ private:
     std::unique_ptr<DirectX::Mouse> m_mouse;
 
     list<GameObject*> m_GameObjects; //data structure to hold pointers to the 3D Game Objects
+    list<GameObject*> m_MenuObjects;
+    //std::Vector<GameObject*> m_MenuObjects
     list<GameObject2D*> m_GameObjects2D; //data structure to hold pointers to the 2D Game Objects 
-                                         
+    list<GameObject2D*> m_MenuObjects2D;
+
     //sound stuff
 	//This uses a simple system, but a better pipeline can be used using Wave Banks
 	//See here: https://github.com/Microsoft/DirectXTK/wiki/Creating-and-playing-sounds Using wave banks Section

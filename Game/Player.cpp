@@ -65,8 +65,8 @@ void Player::Tick(GameData* _GameData)
 
 			float sensitivity = 0.5f;
 			float rotSpeed = sensitivity * _GameData->m_dt;
-				m_yaw -= rotSpeed * _GameData->m_MS.x;
-				m_pitch -= rotSpeed * _GameData->m_MS.y;
+			m_yaw -= rotSpeed * _GameData->m_MS.x;
+			m_pitch -= rotSpeed * _GameData->m_MS.y;
 			}
 
 			//if (_GameData->m_KBS.W)
