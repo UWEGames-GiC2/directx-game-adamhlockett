@@ -36,6 +36,7 @@ public:
 	Vector2 m_pos;
 	Vector2 m_origin;
 	float m_rotation;
+	string m_name;
 
 protected:
 	Vector2 m_scale;

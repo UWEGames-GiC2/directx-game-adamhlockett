@@ -96,12 +96,12 @@ void Game::Initialize(HWND _window, int _width, int _height)
     float AR = (float)_width / (float)_height;
 
     //example basic 3D stuff
-    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f,10.0f,10.0f));
-    m_GameObjects.push_back(platform);
-    m_ColliderObjects.push_back(platform);
+    //std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f,10.0f,10.0f));
+    //m_GameObjects.push_back(platform);
+    //m_ColliderObjects.push_back(platform);
 
     for (int i = 0; i < platform_count; i++) {
-        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (100.0f), 0.0f, i * (100.0f)), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
+        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (100.0f), -100.0f, i * (100.0f)), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 100.0f, 10.0f));
         platforms.push_back(p);
     }
     for (std::shared_ptr<Terrain> plat : platforms) {
@@ -163,6 +163,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
 
     //add Player
     std::shared_ptr<Player> pPlayer = std::make_shared<Player>("steve", m_d3dDevice.Get(), m_fxFactory);
+    //pPlayer->m_name = "player";
     //pPlayer->isRendered = false;
     m_GameObjects.push_back(pPlayer);
     m_PhysicsObjects.push_back(pPlayer);
@@ -245,6 +246,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     hand->SetOrigin(hand_image_origin);
     hand->SetScale(Vector2::One);
     hand->SetPos(/*200.0f * Vector2::One*/Vector2(_width, _height));
+    hand->m_name = "hand";
     m_GameObjects2D.push_back(hand);
 
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
@@ -274,6 +276,24 @@ void Game::Initialize(HWND _window, int _width, int _height)
 //    m_GD->m_hand_anim = true;
 //}
 
+void Game::Fire()
+{
+    if (m_GD->m_hand_anim == true) {
+        m_hand_anim_timer = m_hand_anim_timer + (1 * m_GD->m_dt);
+        float calculated_rot = sin(M_PI * (m_hand_anim_timer / m_hand_anim_end_time));
+        for (auto g : m_GameObjects2D) {
+            if (g.get()->m_name == "hand") {
+                g.get()->SetRot(calculated_rot);
+            }
+        }
+
+        if (m_hand_anim_timer >= m_hand_anim_end_time) {
+            m_GD->m_hand_anim = false;
+            m_hand_anim_timer = 0;
+        }
+    }
+}
+
 // Executes the basic game loop.
 void Game::Tick()
 {
@@ -295,18 +315,13 @@ void Game::Update(DX::StepTimer const& _timer)
 
     //std::cout << std::to_string(m_start_hand_anim);
 
-    if (m_GD->m_hand_anim == true) {
-        //std::cout << std::to_string(m_GameObjects2D[0].get()->m_rotation)+ "\n";
-        m_hand_anim_timer++;
-        float calculated_rot = sin(M_PI * (m_hand_anim_timer / m_hand_anim_end_time));
-        std::cout << std::to_string(calculated_rot);
-        m_GameObjects2D[0].get()->SetRot(calculated_rot);
+    Fire();
 
-        if (m_hand_anim_timer >= m_hand_anim_end_time) {
-            m_GD->m_hand_anim = false;
-            m_hand_anim_timer = 0;
-        }
-    }
+    //for (auto player : m_GameObjects) {
+    //    if (player.get()->m_name == "player") {
+    //        std::cout << std::to_string(player.get()->GetPos().x) + "\n";
+    //    }
+    //}
     
     
     //this will update the audio engine but give us chance to do somehting else if that isn't working

@@ -81,6 +81,8 @@ private:
 
     void OnDeviceLost();
 
+    void Fire();
+
     // Device resources.
     HWND                                            m_window;
     int                                             m_outputWidth;
@@ -99,7 +101,7 @@ private:
 
     
     float m_hand_anim_timer = 0;
-    float m_hand_anim_end_time = 120;
+    float m_hand_anim_end_time = 1.5;
 
     //Scarle Added stuff
     GameData* m_GD = NULL;			//Data to be shared to all Game Objects as they are ticked

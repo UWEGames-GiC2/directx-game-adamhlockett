@@ -35,11 +35,9 @@ void Player::Tick(GameData* _GameData)
 		//case GS_PLAY_FPS_CAM:
 		//{
 			//TURN AND FORWARD CONTROL HERE
-			float speed = 250.0f;
-			float gravity = 400.0f;
-			float jumpspeed = 2000.0f;
-			Vector3 forwardMove = speed * Vector3::Forward;
-			Vector3 sidewardMove = speed * Vector3::Left;
+			
+			Vector3 forwardMove = speed * Vector3::Forward * _GameData->m_dt;
+			Vector3 sidewardMove = speed * Vector3::Left * _GameData->m_dt;
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 			auto kb = Keyboard::Get().GetState();
 			auto ms = Mouse::Get().GetState();
@@ -74,19 +72,29 @@ void Player::Tick(GameData* _GameData)
 			}
 			if (kb.Space)
 			{
-				m_acc.y += jumpspeed;
+				if (m_can_jump) {
+					m_acc.y += jumpspeed * _GameData->m_dt;
+				}
+				m_can_jump = false;
 			}
-			m_acc.y -= gravity;
+
+			m_acc.y -= gravity * _GameData->m_dt;
 
 			if (!m_can_click) {
-				m_can_click_timer++;
+				m_can_click_timer = m_can_click_timer + (1 * _GameData->m_dt);
 				if (m_can_click_timer >= m_max_can_click_timer) {
 					m_can_click = true;
 					m_can_click_timer = 0;
 				}
 			}
+			if (!m_can_jump) {
+				m_can_jump_timer = m_can_jump_timer + (1 * _GameData->m_dt);
+				if (m_can_jump_timer >= m_max_can_jump_timer) {
+					m_can_jump = true;
+					m_can_jump_timer = 0;
+				}
+			}
 			
-
 			float sensitivity = 0.5f;
 			float rotSpeed = sensitivity * _GameData->m_dt;
 			m_yaw -= rotSpeed * _GameData->m_MS.x;
@@ -119,7 +127,7 @@ void Player::Tick(GameData* _GameData)
 
 	//limit motion of the player
 	float length = m_pos.Length();
-	float maxLength = 500.0f;
+	float maxLength = 5000.0f;
 	if (length > maxLength)
 	{
 		m_pos.Normalize();

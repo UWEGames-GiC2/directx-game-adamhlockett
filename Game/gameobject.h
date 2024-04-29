@@ -56,6 +56,7 @@ public:
 	void		SetDrag(float _drag) { m_drag = _drag; }
 
 	bool isRendered = true;
+	//string m_name;
 
 protected:
 
