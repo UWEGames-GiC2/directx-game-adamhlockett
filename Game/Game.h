@@ -11,8 +11,14 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Audio.h"
+#include "CMOGO.h"
+#include <string>
+#include <iostream>
+#include <math.h>
+#include "Terrain.h"
 
 using std::list;
+using namespace std;
 
 // Forward declarations
 struct GameData;
@@ -57,9 +63,14 @@ public:
     // Properties
     void GetDefaultSize( int& _width, int& _height ) const noexcept;
 
-private:
+    //void FireProjectile();
 
     void Update(DX::StepTimer const& _timer);
+
+    //bool m_start_hand_anim = false;
+
+private:
+
     void Render();
 
     void Clear();
@@ -86,15 +97,19 @@ private:
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
 
+    
+    float m_hand_anim_timer = 0;
+    float m_hand_anim_end_time = 120;
+
     //Scarle Added stuff
     GameData* m_GD = NULL;			//Data to be shared to all Game Objects as they are ticked
     DrawData* m_DD = NULL;			//Data to be shared to all 3D Game Objects as they are drawn
     DrawData2D* m_DD2D = NULL;	    //Data to be passed by game to all 2D Game Objects via Draw 
 
     //Basic 3D renderers
-    Camera* m_cam = NULL; //principle camera
-    TPSCamera* m_TPScam = NULL;//TPS cam
-    FPSCamera* m_FPScam = NULL;//FPS cam
+    std::shared_ptr<Camera> m_cam = NULL; //principle camera
+    std::shared_ptr<TPSCamera> m_TPScam = NULL;//TPS cam
+    std::shared_ptr<FPSCamera> m_FPScam = NULL;//FPS cam
     Light* m_light = NULL; //base light
 
     //required for the CMO model rendering system
@@ -106,9 +121,19 @@ private:
     std::unique_ptr<DirectX::Keyboard> m_keyboard;
     std::unique_ptr<DirectX::Mouse> m_mouse;
 
-    list<GameObject*> m_GameObjects; //data structure to hold pointers to the 3D Game Objects
-    list<GameObject2D*> m_GameObjects2D; //data structure to hold pointers to the 2D Game Objects 
-                                         
+    std::vector<std::shared_ptr<GameObject>> m_GameObjects; //data structure to hold pointers to the 3D Game Objects
+    //list<GameObject2D*> m_GameObjects2D; //data structure to hold pointers to the 2D Game Objects 
+    //std::vector<std::shared_ptr<GameObject>> m_GameObjects;
+    std::vector<std::shared_ptr<GameObject2D>> m_GameObjects2D;
+
+    std::vector<std::shared_ptr<CMOGO>> m_ColliderObjects;
+    std::vector<std::shared_ptr<CMOGO>> m_PhysicsObjects;
+    std::vector<std::shared_ptr<Terrain>> platforms;
+
+    int platform_count = 5;
+
+    void CheckCollision();
+    
     //sound stuff
 	//This uses a simple system, but a better pipeline can be used using Wave Banks
 	//See here: https://github.com/Microsoft/DirectXTK/wiki/Creating-and-playing-sounds Using wave banks Section

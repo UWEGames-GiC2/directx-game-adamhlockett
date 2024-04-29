@@ -33,6 +33,9 @@ public:
 	float		GetYaw() { return m_yaw; }
 	float		GetRoll() { return m_roll; }
 
+	Matrix& getWorldTransform() { return m_worldMat; }
+	const Matrix& getWorldTransform() const { return m_worldMat; }
+
 	bool		IsPhysicsOn() { return m_physicsOn; }
 	float		GetDrag() { return m_drag; }
 

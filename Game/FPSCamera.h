@@ -10,6 +10,7 @@ class FPSCamera : public Camera
 {
 public:
 	FPSCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, GameObject* _target, Vector3 _up, Vector3 _dpos);
+	FPSCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, std::shared_ptr<GameObject> _target, Vector3 _up, Vector3 _dpos);
 	virtual ~FPSCamera();
 
 	virtual void Tick(GameData* _GD) override;

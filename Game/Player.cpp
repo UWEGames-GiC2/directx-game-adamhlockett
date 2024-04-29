@@ -22,50 +22,81 @@ Player::~Player()
 
 void Player::Tick(GameData* _GameData)
 {
-	switch (_GameData->m_GS)
-	{
-		case GS_PLAY_MAIN_CAM:
-		{
-			//MOUSE CONTROL SCHEME HERE
-			//float speed = 10.0f;
-			//m_acc.x += speed * _GameData->m_MS.x;
-			//m_acc.z += speed * _GameData->m_MS.y;
-			//break;
-		}
-		case GS_PLAY_FPS_CAM:
-		{
+	//switch (_GameData->m_GS)
+	//{
+		//case GS_PLAY_MAIN_CAM:
+		//{
+		//	//MOUSE CONTROL SCHEME HERE
+		//	//float speed = 10.0f;
+		//	//m_acc.x += speed * _GameData->m_MS.x;
+		//	//m_acc.z += speed * _GameData->m_MS.y;
+		//	//break;
+		//}
+		//case GS_PLAY_FPS_CAM:
+		//{
 			//TURN AND FORWARD CONTROL HERE
-			float speed = 25.0f;
+			float speed = 250.0f;
+			float gravity = 400.0f;
+			float jumpspeed = 2000.0f;
 			Vector3 forwardMove = speed * Vector3::Forward;
 			Vector3 sidewardMove = speed * Vector3::Left;
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
+			auto kb = Keyboard::Get().GetState();
+			auto ms = Mouse::Get().GetState();
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
-			if (_GameData->m_KBS.W)
+			int rotationBounds = 85;
+			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
+			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
+			if (ms.leftButton)
+			{
+				if (m_can_click) {
+					//_GameData->FireProj();
+					_GameData->m_hand_anim = true;
+				}
+				m_can_click = false;
+			}
+			if (kb.W)
 			{
 				m_acc += forwardMove;
 			}
-			if (_GameData->m_KBS.S)
+			if (kb.S)
 			{
 				m_acc -= forwardMove;
 			}
-			if (_GameData->m_KBS.A)
+			if (kb.A)
 			{
 				m_acc += sidewardMove;
 			}
-			if (_GameData->m_KBS.D)
+			if (kb.D)
 			{
 				m_acc -= sidewardMove;
 			}
-			break;
-		}
-	}
+			if (kb.Space)
+			{
+				m_acc.y += jumpspeed;
+			}
+			m_acc.y -= gravity;
+
+			if (!m_can_click) {
+				m_can_click_timer++;
+				if (m_can_click_timer >= m_max_can_click_timer) {
+					m_can_click = true;
+					m_can_click_timer = 0;
+				}
+			}
+			
+
+			float sensitivity = 0.5f;
+			float rotSpeed = sensitivity * _GameData->m_dt;
+			m_yaw -= rotSpeed * _GameData->m_MS.x;
+			m_pitch -= rotSpeed * _GameData->m_MS.y;
+			//break;
+		//}
+	//}
 
 	//change orinetation of player
-	float sensitivity = 0.5f;
-	float rotSpeed = sensitivity * _GameData->m_dt;
-	m_yaw -= rotSpeed * _GameData->m_MS.x;
-	m_pitch -= rotSpeed * _GameData->m_MS.y;
+	
 	//if (_GD->m_KBS.A)
 	//{
 	//	m_yaw += rotSpeed;
@@ -76,15 +107,15 @@ void Player::Tick(GameData* _GameData)
 	//}
 
 	//move player up and down
-	if (_GameData->m_KBS.R)
-	{
-		m_acc.y += 40.0f;
-	}
-
-	if (_GameData->m_KBS.F)
-	{
-		m_acc.y -= 40.0f;
-	}
+	//if (_GameData->m_KBS.R)
+	//{
+	//	m_acc.y += 40.0f;
+	//}
+	//
+	//if (_GameData->m_KBS.F)
+	//{
+	//	m_acc.y -= 40.0f;
+	//}
 
 	//limit motion of the player
 	float length = m_pos.Length();

@@ -24,8 +24,14 @@ public:
 	virtual void Draw(DrawData* _DD) override;
 
 
+	virtual bool Intersects(const CMOGO& other) const;
+
+	BoundingOrientedBox& getCollider()		noexcept { return m_collider; }
+	const BoundingOrientedBox& getCollider() const noexcept { return m_collider; }
+
 protected:
 	unique_ptr<Model>  m_model;
+	BoundingOrientedBox m_collider;
 
 	//needs a slightly different raster state that the VBGOs so create one and let them all use it
 	static ID3D11RasterizerState*  s_pRasterState;

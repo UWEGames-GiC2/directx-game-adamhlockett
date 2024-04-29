@@ -13,6 +13,10 @@
 #include "DrawData2D.h"
 #include "ObjectList.h"
 
+#include "CMOGO.h"
+#include <DirectXCollision.h>
+#include "Collision.h"
+
 extern void ExitGame() noexcept;
 
 using namespace DirectX;
@@ -60,7 +64,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
 
     //create GameData struct and populate its pointers
     m_GD = new GameData;
-    m_GD->m_GS = GS_PLAY_MAIN_CAM;
+    m_GD->m_GS = GS_PLAY_FPS_CAM;
 
     //set up systems for 2D rendering
     m_DD2D = new DrawData2D();
@@ -85,15 +89,26 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //create a set of dummy things to show off the engine
 
     //create a base light
-    m_light = new Light(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
+    std::shared_ptr<Light> m_light = std::make_shared<Light>(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
     m_GameObjects.push_back(m_light);
 
     //find how big my window is to correctly calculate my aspect ratio
     float AR = (float)_width / (float)_height;
 
     //example basic 3D stuff
-    //Terrain* terrain = new Terrain("table", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, 0.25f * Vector3::One);
-    //m_GameObjects.push_back(terrain);
+    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f,10.0f,10.0f));
+    m_GameObjects.push_back(platform);
+    m_ColliderObjects.push_back(platform);
+
+    for (int i = 0; i < platform_count; i++) {
+        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (100.0f), 0.0f, i * (100.0f)), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
+        platforms.push_back(p);
+    }
+    for (std::shared_ptr<Terrain> plat : platforms) {
+        m_GameObjects.push_back(plat);
+        m_ColliderObjects.push_back(plat);
+    }
+   
 
     ////L-system like tree
     //m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f * Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up", m_d3dDevice.Get(), m_fxFactory));
@@ -102,17 +117,19 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //FileVBGO* terrainBox = new FileVBGO("terrainTex", m_d3dDevice.Get());
     //m_GameObjects.push_back(terrainBox);
 
-    FileVBGO* Box = new FileVBGO("cube", m_d3dDevice.Get());
-    m_GameObjects.push_back(Box);
-    Box->SetPos(Vector3(0.0f, 0.0f, -100.0f));
-    Box->SetPitch(XM_PIDIV4);
-    Box->SetScale(20.0f);
-
-    VBCube* cube = new VBCube();
-    cube->init(11, m_d3dDevice.Get());
-    cube->SetPos(Vector3(100.0f, 0.0f, 0.0f));
-    cube->SetScale(4.0f);
-    m_GameObjects.push_back(cube);
+    std::shared_ptr<FileVBGO> box = std::make_shared<FileVBGO>("cube", m_d3dDevice.Get());
+    box->SetPos(Vector3(0.0f, 0.0f, -100.0f));
+    box->SetPitch(XM_PIDIV4);
+    box->SetScale(20.0f);
+    m_GameObjects.push_back(box);
+    //m_ColliderObjects.push_back(box);
+    
+    //std::shared_ptr<VBCube> cube = std::make_shared<VBCube>();
+    //cube->init(11, m_d3dDevice.Get());
+    //cube->SetPos(Vector3(100.0f, 0.0f, 0.0f));
+    //cube->SetScale(4.0f);
+    //m_GameObjects.push_back(cube);
+    //m_ColliderObjects.push_back(cube);
 
     /*VBSpike* spikes = new VBSpike();
     spikes->init(11, m_d3dDevice.Get());
@@ -145,21 +162,22 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects.push_back(VBMC);*/
 
     //add Player
-    Player* pPlayer = new Player("BirdModelV1", m_d3dDevice.Get(), m_fxFactory);
+    std::shared_ptr<Player> pPlayer = std::make_shared<Player>("steve", m_d3dDevice.Get(), m_fxFactory);
     //pPlayer->isRendered = false;
     m_GameObjects.push_back(pPlayer);
+    m_PhysicsObjects.push_back(pPlayer);
 
     //create a base camera
-    m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
+    m_cam = std::make_shared<Camera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
     m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
     m_GameObjects.push_back(m_cam);
 
     //add a secondary camera
-    m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 100.0f, 50.0f));
+    m_TPScam = std::make_shared<TPSCamera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 100.0f, 50.0f));
     m_GameObjects.push_back(m_TPScam);
 
     //add first person camera
-    m_FPScam = new FPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 0.0f, 0.1f));
+    m_FPScam = std::make_shared<FPSCamera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 0.0f, 0.1f));
     m_GameObjects.push_back(m_FPScam);
 
     //test all GPGOs
@@ -217,33 +235,44 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_DD = new DrawData;
     m_DD->m_pd3dImmediateContext = nullptr;
     m_DD->m_states = m_states;
-    m_DD->m_cam = m_cam;
-    m_DD->m_light = m_light;
+    m_DD->m_cam = m_cam.get();
+    m_DD->m_light = m_light.get();
 
-    
 
     //example basic 2D stuff
-    /*ImageGO2D* logo = new ImageGO2D("logo_small", m_d3dDevice.Get());
-    logo->SetPos(200.0f * Vector2::One);
-    m_GameObjects2D.push_back(logo);
-    ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
-    bug_test->SetPos(300.0f * Vector2::One);
-    m_GameObjects2D.push_back(bug_test);
+    std::shared_ptr<ImageGO2D> hand = std::make_shared<ImageGO2D>("hand", m_d3dDevice.Get());
+    Vector2 hand_image_origin(875, 875);
+    hand->SetOrigin(hand_image_origin);
+    hand->SetScale(Vector2::One);
+    hand->SetPos(/*200.0f * Vector2::One*/Vector2(_width, _height));
+    m_GameObjects2D.push_back(hand);
 
-    TextGO2D* text = new TextGO2D("Test Text");
+    //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
+    //bug_test->SetPos(300.0f * Vector2::One);
+    //m_GameObjects2D.push_back(bug_test);
+    /*TextGO2D* text = new TextGO2D("Test Text");
     text->SetPos(Vector2(100, 10));
     text->SetColour(Color((float*)&Colors::Yellow));
     m_GameObjects2D.push_back(text);*/
-
     //Test Sounds
-    Loop* loop = new Loop(m_audioEngine.get(), "NightAmbienceSimple_02");
-    loop->SetVolume(0.1f);
-    loop->Play();
-    m_Sounds.push_back(loop);
-
-    TestSound* TS = new TestSound(m_audioEngine.get(), "Explo1");
-    m_Sounds.push_back(TS);
+    //Loop* loop = new Loop(m_audioEngine.get(), "NightAmbienceSimple_02");
+    //loop->SetVolume(0.1f);
+    //loop->Play();
+    //m_Sounds.push_back(loop);
+    //
+    //TestSound* TS = new TestSound(m_audioEngine.get(), "Explo1");
+    //m_Sounds.push_back(TS);
 }
+
+//void Game::FireProjectile() 
+//{
+//    // spawn projectile
+//    // cause an update that moves it
+//    // do hand animation
+//    //std::cout << std::to_string(m_start_hand_anim) + "\n";
+//    //std::cout << "fire";
+//    m_GD->m_hand_anim = true;
+//}
 
 // Executes the basic game loop.
 void Game::Tick()
@@ -262,6 +291,24 @@ void Game::Update(DX::StepTimer const& _timer)
     float elapsedTime = float(_timer.GetElapsedSeconds());
     m_GD->m_dt = elapsedTime;
 
+    //hand animation when firing
+
+    //std::cout << std::to_string(m_start_hand_anim);
+
+    if (m_GD->m_hand_anim == true) {
+        //std::cout << std::to_string(m_GameObjects2D[0].get()->m_rotation)+ "\n";
+        m_hand_anim_timer++;
+        float calculated_rot = sin(M_PI * (m_hand_anim_timer / m_hand_anim_end_time));
+        std::cout << std::to_string(calculated_rot);
+        m_GameObjects2D[0].get()->SetRot(calculated_rot);
+
+        if (m_hand_anim_timer >= m_hand_anim_end_time) {
+            m_GD->m_hand_anim = false;
+            m_hand_anim_timer = 0;
+        }
+    }
+    
+    
     //this will update the audio engine but give us chance to do somehting else if that isn't working
     if (!m_audioEngine->Update())
     {
@@ -282,27 +329,31 @@ void Game::Update(DX::StepTimer const& _timer)
     ReadInput();
     //upon space bar switch camera state
     //see docs here for what's going on: https://github.com/Microsoft/DirectXTK/wiki/Keyboard
-    if (m_GD->m_KBS_tracker.pressed.Space)
+    if (m_GD->m_KBS_tracker.pressed.R)
     {
-        if (m_GD->m_GS == GS_PLAY_MAIN_CAM)
+        if (m_GD->m_GS == GS_PLAY_TPS_CAM)
         {
             m_GD->m_GS = GS_PLAY_FPS_CAM;
         }
         else
         {
-            m_GD->m_GS = GS_PLAY_MAIN_CAM;
+            m_GD->m_GS = GS_PLAY_TPS_CAM;
         }
     }
 
     //update all objects
-    for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+    for (vector<std::shared_ptr<GameObject>>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
     {
         (*it)->Tick(m_GD);
     }
-    for (list<GameObject2D*>::iterator it = m_GameObjects2D.begin(); it != m_GameObjects2D.end(); it++)
+    for (vector<std::shared_ptr<GameObject2D>>::iterator it = m_GameObjects2D.begin(); it != m_GameObjects2D.end(); it++)
     {
+        //OutputDebugStringW(std::to_string((*it)->m_pos.x) + " " + std::to_string((*it)->m_pos.y));
+        //std::cout << (std::to_string((*it)->m_origin.x) + " " + std::to_string((*it)->m_origin.y));
         (*it)->Tick(m_GD);
     }
+
+    CheckCollision();
 }
 
 // Draws the scene.
@@ -320,27 +371,31 @@ void Game::Render()
     m_DD->m_pd3dImmediateContext = m_d3dContext.Get();
 
     //set which camera to be used
-    m_DD->m_cam = m_cam;
+    //m_DD->m_cam = m_cam;
     if (m_GD->m_GS == GS_PLAY_FPS_CAM)
     {
-        m_DD->m_cam = m_FPScam;
+        m_DD->m_cam = m_FPScam.get();
+    }
+    if (m_GD->m_GS == GS_PLAY_TPS_CAM)
+    {
+        m_DD->m_cam = m_TPScam.get();
     }
 
     //update the constant buffer for the rendering of VBGOs
     VBGO::UpdateConstantBuffer(m_DD);
 
     //Draw 3D Game Obejects
-    for (list<GameObject*>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+    for (std::vector<std::shared_ptr<GameObject>>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
     {
         if ((*it)->isRendered)
         {
-            (*it)->Draw(m_DD);
+            (*it).get()->Draw(m_DD);
         }
     }
 
     // Draw sprite batch stuff 
     m_DD2D->m_Sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-    for (list<GameObject2D*>::iterator it = m_GameObjects2D.begin(); it != m_GameObjects2D.end(); it++)
+    for (std::vector<std::shared_ptr<GameObject2D>>::iterator it = m_GameObjects2D.begin(); it != m_GameObjects2D.end(); it++)
     {
         (*it)->Draw(m_DD2D);
     }
@@ -422,8 +477,8 @@ void Game::OnWindowSizeChanged(int _width, int _height)
 void Game::GetDefaultSize(int& _width, int& _height) const noexcept
 {
     // TODO: Change to desired default window size (note minimum size is 320x200).
-    _width = 800;
-    _height = 600;
+    _width = 1280;
+    _height = 720;
 }
 
 // These are the resources that depend on the device.
@@ -622,4 +677,17 @@ void Game::ReadInput()
     RECT window;
     GetWindowRect(m_window, &window);
     SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
+}
+
+void Game::CheckCollision()
+{
+    for (int i = 0; i < m_PhysicsObjects.size(); i++) for (int j = 0; j < m_ColliderObjects.size(); j++)
+    {
+        if (m_PhysicsObjects[i]->Intersects(*m_ColliderObjects[j])) //std::cout << "Collision Detected!" << std::endl;
+        {
+            XMFLOAT3 eject_vect = Collision::ejectionCMOGO(*m_PhysicsObjects[i], *m_ColliderObjects[j]);
+            auto pos = m_PhysicsObjects[i]->GetPos();
+            m_PhysicsObjects[i]->SetPos(pos - eject_vect);
+        }
+    }
 }
