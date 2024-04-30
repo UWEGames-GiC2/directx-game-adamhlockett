@@ -22,10 +22,9 @@ struct GameData
 	Mouse::State m_MS;
 	Keyboard::KeyboardStateTracker m_KBS_tracker;
 	//Game game;
-	bool m_hand_anim;
+	bool m_hand_anim, gravity_on = true, m_can_jump = true;
 
 	//void FireProj() { game.FireProjectile(); };
 
-	
 };
 #endif

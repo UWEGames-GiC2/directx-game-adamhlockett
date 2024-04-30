@@ -8,10 +8,11 @@ Player::Player(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF)
 	//any special set up for Player goes here
 	m_fudge = Matrix::CreateRotationY(XM_PI);
 
-	m_pos.y = 10.0f;
+	m_pos.y = 200.0f;
 
-	SetDrag(2);
+	SetDrag(3);
 	SetPhysicsOn(true);
+	
 }
 
 Player::~Player()
@@ -46,40 +47,70 @@ void Player::Tick(GameData* _GameData)
 			int rotationBounds = 85;
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
+			
+			std::cout << std::to_string(m_yaw) << std::endl;
 			if (ms.leftButton)
 			{
 				if (m_can_click) {
-					//_GameData->FireProj();
+					bool foundProjectile = false;
+					for (size_t i = 0; i < projectiles.size(); i++) {
+						if (!projectiles[i]->IsActive()) {
+							Vector3 forwardMove = 40.0f * Vector3::Forward;
+							float _pitch = m_pitch;
+							//if(m_yaw >)
+							Matrix rotMove = Matrix::CreateRotationY(m_yaw) * Matrix::CreateRotationX(_pitch);
+							forwardMove = Vector3::Transform(forwardMove, rotMove);
+							projectiles[i].get()->SetPos(this->GetPos());
+							projectiles[i].get()->SetActive(true);
+							projectiles[i].get()->SetYaw(this->GetYaw() + 3.2);
+							projectiles[i].get()->SetPitch(this->GetPitch());
+							projectiles[i].get()->SetRoll(this->GetRoll());
+							projectiles[i].get()->SetDrag(0.01f);
+							projectiles[i].get()->SetPhysicsOn(true);
+							projectiles[i].get()->SetAcceleration(forwardMove * 1000.0f);
+						}
+					}
+
 					_GameData->m_hand_anim = true;
+					m_can_click = false;
+
 				}
-				m_can_click = false;
 			}
+
 			if (kb.W)
 			{
 				m_acc += forwardMove;
 			}
+
 			if (kb.S)
 			{
 				m_acc -= forwardMove;
 			}
+
 			if (kb.A)
 			{
 				m_acc += sidewardMove;
 			}
+
 			if (kb.D)
 			{
 				m_acc -= sidewardMove;
 			}
+
 			if (kb.Space)
 			{
-				if (m_can_jump) {
+				if (_GameData->m_can_jump && m_can_jump) {
 					m_acc.y += jumpspeed * _GameData->m_dt;
+					_GameData->m_can_jump = false;
+					m_can_jump = false;
 				}
-				m_can_jump = false;
 			}
 
-			m_acc.y -= gravity * _GameData->m_dt;
 
+			if (_GameData->gravity_on) {
+				m_acc.y -= gravity * _GameData->m_dt;
+			}
+			
 			if (!m_can_click) {
 				m_can_click_timer = m_can_click_timer + (1 * _GameData->m_dt);
 				if (m_can_click_timer >= m_max_can_click_timer) {
@@ -87,6 +118,7 @@ void Player::Tick(GameData* _GameData)
 					m_can_click_timer = 0;
 				}
 			}
+
 			if (!m_can_jump) {
 				m_can_jump_timer = m_can_jump_timer + (1 * _GameData->m_dt);
 				if (m_can_jump_timer >= m_max_can_jump_timer) {

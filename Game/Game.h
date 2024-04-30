@@ -16,6 +16,8 @@
 #include <iostream>
 #include <math.h>
 #include "Terrain.h"
+#include "Projectile.h"
+#include "Player.h"
 
 using std::list;
 using namespace std;
@@ -102,6 +104,13 @@ private:
     
     float m_hand_anim_timer = 0;
     float m_hand_anim_end_time = 1.5;
+    int collision_count = 0;
+    float platform_offset = 50.0f;
+
+    float camera_bob_counter = 0;
+    int camera_bob_multiplier = 1;
+    Vector2 p_current_pos;
+    Vector2 p_last_pos;
 
     //Scarle Added stuff
     GameData* m_GD = NULL;			//Data to be shared to all Game Objects as they are ticked
@@ -109,6 +118,7 @@ private:
     DrawData2D* m_DD2D = NULL;	    //Data to be passed by game to all 2D Game Objects via Draw 
 
     //Basic 3D renderers
+    std::shared_ptr<Player> pPlayer = NULL;
     std::shared_ptr<Camera> m_cam = NULL; //principle camera
     std::shared_ptr<TPSCamera> m_TPScam = NULL;//TPS cam
     std::shared_ptr<FPSCamera> m_FPScam = NULL;//FPS cam
@@ -130,11 +140,14 @@ private:
 
     std::vector<std::shared_ptr<CMOGO>> m_ColliderObjects;
     std::vector<std::shared_ptr<CMOGO>> m_PhysicsObjects;
+    std::vector<std::shared_ptr<CMOGO>> m_ProjectileObjects;
     std::vector<std::shared_ptr<Terrain>> platforms;
+    std::vector<std::shared_ptr<Projectile>> m_projectiles;
 
     int platform_count = 5;
 
     void CheckCollision();
+    void CheckProjectileCollision();
     
     //sound stuff
 	//This uses a simple system, but a better pipeline can be used using Wave Banks

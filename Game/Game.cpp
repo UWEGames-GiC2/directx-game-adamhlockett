@@ -88,6 +88,20 @@ void Game::Initialize(HWND _window, int _width, int _height)
 
     //create a set of dummy things to show off the engine
 
+    for (size_t i = 0; i < 10; i++) {
+        std::shared_ptr<Projectile> proj = std::make_shared<Projectile>("capsule", m_d3dDevice.Get(), m_fxFactory);
+        proj->SetActive(false);
+        m_GameObjects.push_back(proj);
+        m_ProjectileObjects.push_back(proj);
+    }
+
+    pPlayer = std::make_shared<Player>("steve", m_d3dDevice.Get(), m_fxFactory);
+    //pPlayer->m_name = "player";
+    //pPlayer->isRendered = false;
+    m_GameObjects.push_back(pPlayer);
+    m_PhysicsObjects.push_back(pPlayer);
+    pPlayer.get()->projectiles = m_ProjectileObjects;
+
     //create a base light
     std::shared_ptr<Light> m_light = std::make_shared<Light>(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
     m_GameObjects.push_back(m_light);
@@ -96,12 +110,12 @@ void Game::Initialize(HWND _window, int _width, int _height)
     float AR = (float)_width / (float)_height;
 
     //example basic 3D stuff
-    //std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(100.0f, 0.0f, 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f,10.0f,10.0f));
-    //m_GameObjects.push_back(platform);
-    //m_ColliderObjects.push_back(platform);
+    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(2.0f,2.0f,2.0f));
+    m_GameObjects.push_back(platform);
+    m_ColliderObjects.push_back(platform);
 
     for (int i = 0; i < platform_count; i++) {
-        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (100.0f), -100.0f, i * (100.0f)), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 100.0f, 10.0f));
+        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (platform_offset) + 100.0f, -100.0f, i * (platform_offset) + 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
         platforms.push_back(p);
     }
     for (std::shared_ptr<Terrain> plat : platforms) {
@@ -109,7 +123,6 @@ void Game::Initialize(HWND _window, int _width, int _height)
         m_ColliderObjects.push_back(plat);
     }
    
-
     ////L-system like tree
     //m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f * Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up", m_d3dDevice.Get(), m_fxFactory));
 
@@ -160,13 +173,6 @@ void Game::Initialize(HWND _window, int _width, int _height)
     VBMC->SetPitch(-XM_PIDIV2);
     VBMC->SetScale(Vector3(3, 3, 1.5));
     m_GameObjects.push_back(VBMC);*/
-
-    //add Player
-    std::shared_ptr<Player> pPlayer = std::make_shared<Player>("steve", m_d3dDevice.Get(), m_fxFactory);
-    //pPlayer->m_name = "player";
-    //pPlayer->isRendered = false;
-    m_GameObjects.push_back(pPlayer);
-    m_PhysicsObjects.push_back(pPlayer);
 
     //create a base camera
     m_cam = std::make_shared<Camera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
@@ -312,18 +318,22 @@ void Game::Update(DX::StepTimer const& _timer)
     m_GD->m_dt = elapsedTime;
 
     //hand animation when firing
-
-    //std::cout << std::to_string(m_start_hand_anim);
-
     Fire();
 
-    //for (auto player : m_GameObjects) {
-    //    if (player.get()->m_name == "player") {
-    //        std::cout << std::to_string(player.get()->GetPos().x) + "\n";
-    //    }
+    //p_current_pos = { pPlayer->GetPos().x , pPlayer.get()->GetPos().y };
+    //
+    //if (int(p_current_pos.x) != int(p_last_pos.x) || int(p_current_pos.y) != int(p_last_pos.y)) {
+    //    //bob camera
+    //    camera_bob_counter = camera_bob_counter + m_GD->m_dt;
+        m_FPScam.get()->SetDPos(Vector3(0.0f, (sin(camera_bob_counter))/500, 0.1f));
+        m_FPScam.get()->SetTargetDisplacement((sin(camera_bob_counter) / 500));
+    //    std::cout << std::to_string(m_FPScam.get()->GetPos().y) + "\n";
     //}
+    //
+    //p_last_pos = { pPlayer.get()->GetPos().x , pPlayer.get()->GetPos().y };
     
-    
+
+
     //this will update the audio engine but give us chance to do somehting else if that isn't working
     if (!m_audioEngine->Update())
     {
@@ -369,6 +379,7 @@ void Game::Update(DX::StepTimer const& _timer)
     }
 
     CheckCollision();
+    CheckProjectileCollision();
 }
 
 // Draws the scene.
@@ -402,7 +413,7 @@ void Game::Render()
     //Draw 3D Game Obejects
     for (std::vector<std::shared_ptr<GameObject>>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
     {
-        if ((*it)->isRendered)
+        if ((*it)->IsActive())
         {
             (*it).get()->Draw(m_DD);
         }
@@ -696,6 +707,7 @@ void Game::ReadInput()
 
 void Game::CheckCollision()
 {
+    collision_count = 0;
     for (int i = 0; i < m_PhysicsObjects.size(); i++) for (int j = 0; j < m_ColliderObjects.size(); j++)
     {
         if (m_PhysicsObjects[i]->Intersects(*m_ColliderObjects[j])) //std::cout << "Collision Detected!" << std::endl;
@@ -703,6 +715,27 @@ void Game::CheckCollision()
             XMFLOAT3 eject_vect = Collision::ejectionCMOGO(*m_PhysicsObjects[i], *m_ColliderObjects[j]);
             auto pos = m_PhysicsObjects[i]->GetPos();
             m_PhysicsObjects[i]->SetPos(pos - eject_vect);
+            if(eject_vect.y < 0) collision_count++;
+        }
+    }
+    if (collision_count > 0) {
+        m_GD->gravity_on = false;
+        m_GD->m_can_jump = true;
+    }
+    else {
+        m_GD->gravity_on = true;
+    }
+    //std::cout << std::to_string(collision_count) + "\n";
+}
+
+void Game::CheckProjectileCollision() 
+{
+    for (int i = 0; i < m_ProjectileObjects.size();i++) for (int j = 0; j < m_ColliderObjects.size(); j++) 
+    {
+        if (m_ProjectileObjects[i]->IsActive() && m_ProjectileObjects[i]->Intersects(*m_ColliderObjects[j])) 
+        {
+            std::cout << "projectile collision" << std::endl;
+            m_ProjectileObjects[i]->SetActive(false);
         }
     }
 }

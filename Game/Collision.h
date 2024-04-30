@@ -70,7 +70,7 @@ namespace Collision
 
 
 		float pen_dist = numeric_limits<float>::infinity();
-		XMVECTOR pen_vector;
+		XMVECTOR pen_vector{};
 
 		for (const auto& ax : collision_axes)
 		{
