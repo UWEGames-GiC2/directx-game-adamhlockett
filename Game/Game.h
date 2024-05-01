@@ -85,7 +85,7 @@ private:
 
     void Fire();
     void GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int platform_count);
-    void GeneratePlatformsRandom(Vector3 start_pos, float grid_offset);
+    void GeneratePlatformsRandom(Vector3 start_pos, int platform_count);
 
     // Device resources.
     HWND                                            m_window;

@@ -45,12 +45,11 @@ void Player::Tick(GameData* _GameData)
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
 			int rotationBounds = 85;
-			int rotationBoundsYaw = 90;
 			float _pitch = m_pitch;
 			//std::cout << std::to_string(XMConvertToDegrees(m_yaw)) + "\n";
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
-			if ((int(XMConvertToDegrees(m_yaw) - 85) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
+			if ((int(XMConvertToDegrees(m_yaw) /*- 85*/) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
 			
 
 			//if (m_yaw > XMConvertToRadians(rotationBoundsYaw) || m_yaw < XMConvertToRadians(-rotationBoundsYaw)) _pitch = -XMConvertToDegrees(m_pitch);

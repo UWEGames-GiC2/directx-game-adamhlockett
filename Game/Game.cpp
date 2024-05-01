@@ -259,7 +259,8 @@ void Game::Initialize(HWND _window, int _width, int _height)
     hand->m_name = "hand";
     m_GameObjects2D.push_back(hand);
 
-    //GeneratePlatformsRegular(Vector3(10.0f,0.0f,10.0f), 100.0f, 25);
+    GeneratePlatformsRegular(Vector3(10.0f,-10.0f,10.0f), 100.0f, 25);
+    GeneratePlatformsRandom(Vector3(500.0f, -20.0f, 500.0f), 5);
 
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
     //bug_test->SetPos(300.0f * Vector2::One);
@@ -308,7 +309,7 @@ void Game::Fire()
 
 void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_count)
 {
-    //std::cout << "generate platforms\n";
+    std::cout << "generate platforms\n";
     int dimension = int(sqrt(p_count));
     //std::cout << std::to_string(dimension) << std::endl;
 
@@ -321,10 +322,19 @@ void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_
             float pos_z = start_pos.z + (grid_offset * j);
             Vector3 pos(pos_x, pos_y, pos_z);
             std::cout << std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
-            std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(4.5f, 2.0f, 4.5f));
+            std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(4.5f, 20.0f, 4.5f));
             m_GameObjects.push_back(platform);
             m_ColliderObjects.push_back(platform);
         }
+    }
+}
+
+void Game::GeneratePlatformsRandom(Vector3 start_pos, int platform_count)
+{
+    std::cout << "generate random platforms\n";
+    for (int i = 0; i < platform_count; i++) {
+        // make random offset
+        float pos_x = start_pos.x +
     }
 }
 
@@ -342,6 +352,7 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& _timer)
 {
+    std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
     float elapsedTime = float(_timer.GetElapsedSeconds());
     m_GD->m_dt = elapsedTime;
 
