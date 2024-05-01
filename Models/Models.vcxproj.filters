@@ -24,5 +24,6 @@
     <MeshContentTask Include="C:\Users\adam\Downloads\source\round platform.fbx" />
     <MeshContentTask Include="C:\Users\adam\Downloads\floor_4x4_free.fbx" />
     <MeshContentTask Include="C:\Users\adam\Downloads\capsule.fbx" />
+    <MeshContentTask Include="C:\Users\adam\Downloads\source\Archery Target.fbx" />
   </ItemGroup>
 </Project>

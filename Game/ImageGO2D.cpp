@@ -45,6 +45,7 @@ void ImageGO2D::Tick(GameData* _GD)
 {
 	//spins!
 	//m_rotation += _GD->m_dt;
+	
 }
 
 

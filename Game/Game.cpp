@@ -106,6 +106,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     std::shared_ptr<Light> m_light = std::make_shared<Light>(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
     m_GameObjects.push_back(m_light);
 
+
     //find how big my window is to correctly calculate my aspect ratio
     float AR = (float)_width / (float)_height;
 
@@ -113,70 +114,60 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(2.0f,20.0f,2.0f));
     //m_GameObjects.push_back(platform);
     //m_ColliderObjects.push_back(platform);
-
-    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 20.0f, 10.0f));
-    m_GameObjects.push_back(platform);
-    m_ColliderObjects.push_back(platform);
-
-    for (int i = 0; i < platform_count; i++) {
-        std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (platform_offset) + 100.0f, -100.0f, i * (platform_offset) + 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
-        //platforms.push_back(p);
-        m_GameObjects.push_back(p);
-        m_ColliderObjects.push_back(p);
-    }
+    //std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 20.0f, 10.0f));
+    //m_GameObjects.push_back(platform);
+    //m_ColliderObjects.push_back(platform);
+    //for (int i = 0; i < platform_count; i++) {
+    //    std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (platform_offset) + 100.0f, -100.0f, i * (platform_offset) + 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
+    //    //platforms.push_back(p);
+    //    m_GameObjects.push_back(p);
+    //    m_ColliderObjects.push_back(p);
+    //}
     //for (std::shared_ptr<Terrain> plat : platforms) {
     //}
-   
     ////L-system like tree
     //m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f * Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up", m_d3dDevice.Get(), m_fxFactory));
-
     ////Vertex Buffer Game Objects
     //FileVBGO* terrainBox = new FileVBGO("terrainTex", m_d3dDevice.Get());
     //m_GameObjects.push_back(terrainBox);
-
-    std::shared_ptr<FileVBGO> box = std::make_shared<FileVBGO>("cube", m_d3dDevice.Get());
-    box->SetPos(Vector3(0.0f, 0.0f, -100.0f));
-    box->SetPitch(XM_PIDIV4);
-    box->SetScale(20.0f);
-    m_GameObjects.push_back(box);
+    //std::shared_ptr<FileVBGO> box = std::make_shared<FileVBGO>("cube", m_d3dDevice.Get());
+    //box->SetPos(Vector3(0.0f, 0.0f, -100.0f));
+    //box->SetPitch(XM_PIDIV4);
+    //box->SetScale(20.0f);
+    //m_GameObjects.push_back(box);
     //m_ColliderObjects.push_back(box);
-    
     //std::shared_ptr<VBCube> cube = std::make_shared<VBCube>();
     //cube->init(11, m_d3dDevice.Get());
     //cube->SetPos(Vector3(100.0f, 0.0f, 0.0f));
     //cube->SetScale(4.0f);
     //m_GameObjects.push_back(cube);
     //m_ColliderObjects.push_back(cube);
-
-    /*VBSpike* spikes = new VBSpike();
-    spikes->init(11, m_d3dDevice.Get());
-    spikes->SetPos(Vector3(0.0f, 0.0f, 100.0f));
-    spikes->SetScale(4.0f);
-    m_GameObjects.push_back(spikes);
-
-    VBSpiral* spiral = new VBSpiral();
-    spiral->init(11, m_d3dDevice.Get());
-    spiral->SetPos(Vector3(-100.0f, 0.0f, 0.0f));
-    spiral->SetScale(4.0f);
-    m_GameObjects.push_back(spiral);
-
-    VBPillow* pillow = new VBPillow();
-    pillow->init(11, m_d3dDevice.Get());
-    pillow->SetPos(Vector3(-100.0f, 0.0f, -100.0f));
-    pillow->SetScale(4.0f);
-    m_GameObjects.push_back(pillow);
-
-    VBSnail* snail = new VBSnail(m_d3dDevice.Get(), "shell", 150, 0.98f, 0.09f * XM_PI, 0.4f, Color(1.0f, 0.0f, 0.0f, 1.0f), Color(0.0f, 0.0f, 1.0f, 1.0f));
-    snail->SetPos(Vector3(-100.0f, 0.0f, 100.0f));
-    snail->SetScale(2.0f);
-    m_GameObjects.push_back(snail);*/
-    //Marching Cubes
-    /*VBMarchCubes* VBMC = new VBMarchCubes();
-    VBMC->init(Vector3(-8.0f, -8.0f, -17.0f), Vector3(8.0f, 8.0f, 23.0f), 60.0f * Vector3::One, 0.01, m_d3dDevice.Get());
-    VBMC->SetPos(Vector3(100, 0, -100));
-    VBMC->SetPitch(-XM_PIDIV2);
-    VBMC->SetScale(Vector3(3, 3, 1.5));
-    m_GameObjects.push_back(VBMC);*/
+    //VBSpike* spikes = new VBSpike();
+    //spikes->init(11, m_d3dDevice.Get());
+    //spikes->SetPos(Vector3(0.0f, 0.0f, 100.0f));
+    //spikes->SetScale(4.0f);
+    //m_GameObjects.push_back(spikes);
+    //VBSpiral* spiral = new VBSpiral();
+    //spiral->init(11, m_d3dDevice.Get());
+    //spiral->SetPos(Vector3(-100.0f, 0.0f, 0.0f));
+    //spiral->SetScale(4.0f);
+    //m_GameObjects.push_back(spiral);
+    //VBPillow* pillow = new VBPillow();
+    //pillow->init(11, m_d3dDevice.Get());
+    //pillow->SetPos(Vector3(-100.0f, 0.0f, -100.0f));
+    //pillow->SetScale(4.0f);
+    //m_GameObjects.push_back(pillow);
+    //VBSnail* snail = new VBSnail(m_d3dDevice.Get(), "shell", 150, 0.98f, 0.09f * XM_PI, 0.4f, Color(1.0f, 0.0f, 0.0f, 1.0f), Color(0.0f, 0.0f, 1.0f, 1.0f));
+    //snail->SetPos(Vector3(-100.0f, 0.0f, 100.0f));
+    //snail->SetScale(2.0f);
+    //m_GameObjects.push_back(snail);*/
+    ////Marching Cubes
+    //VBMarchCubes* VBMC = new VBMarchCubes();
+    //VBMC->init(Vector3(-8.0f, -8.0f, -17.0f), Vector3(8.0f, 8.0f, 23.0f), 60.0f * Vector3::One, 0.01, m_d3dDevice.Get());
+    //VBMC->SetPos(Vector3(100, 0, -100));
+    //VBMC->SetPitch(-XM_PIDIV2);
+    //VBMC->SetScale(Vector3(3, 3, 1.5));
+    //m_GameObjects.push_back(VBMC);*/
 
     //create a base camera
     m_cam = std::make_shared<Camera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
@@ -259,8 +250,15 @@ void Game::Initialize(HWND _window, int _width, int _height)
     hand->m_name = "hand";
     m_GameObjects2D.push_back(hand);
 
-    GeneratePlatformsRegular(Vector3(10.0f,-10.0f,10.0f), 100.0f, 25);
-    GeneratePlatformsRandom(Vector3(500.0f, -20.0f, 500.0f), 5);
+    timer = std::make_shared<TextGO2D>("60.0s");
+    //timer->SetPos(Vector2(20, 20));
+    //timer->SetColour(Color((float*)&Colors::Tomato));
+    m_GameObjects2D.push_back(timer);
+
+    GeneratePlatformsRegular(Vector3(10.0f,-10.0f,10.0f), 100.0f, 4);
+    GeneratePlatformsRandom(Vector3(100.0f, -20.0f, 250.0f), 10);
+
+    pPlayer.get()->SetYaw(-27000);
 
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
     //bug_test->SetPos(300.0f * Vector2::One);
@@ -321,7 +319,7 @@ void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_
             float pos_y = start_pos.y;
             float pos_z = start_pos.z + (grid_offset * j);
             Vector3 pos(pos_x, pos_y, pos_z);
-            std::cout << std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
+            //std::cout << std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
             std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(4.5f, 20.0f, 4.5f));
             m_GameObjects.push_back(platform);
             m_ColliderObjects.push_back(platform);
@@ -331,11 +329,37 @@ void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_
 
 void Game::GeneratePlatformsRandom(Vector3 start_pos, int platform_count)
 {
+    //if (platforms.size() > 12) {
+    //    for (int i = 0; i < platforms.size() - 12; i++) {
+    //        platforms.erase(platforms.begin() + i);
+    //    }
+    //}
+
     std::cout << "generate random platforms\n";
     for (int i = 0; i < platform_count; i++) {
         // make random offset
-        //float pos_x = start_pos.x +
+        int offset_x = -50 + (rand() % 101);
+        int offset_z = (i * 50) + (-25 + (rand() % 25));
+        float pos_x = start_pos.x + offset_x;
+        float pos_y = start_pos.y;
+        float pos_z = start_pos.z + offset_z;
+        Vector3 pos(pos_x, pos_y, pos_z);
+        std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
+        m_GameObjects.push_back(platform);
+        m_ColliderObjects.push_back(platform);
+        platforms.push_back(platform);
+        end_platform = platform;
     }
+    // spawn enemy on end_platform
+    float pos_x = end_platform.get()->GetPos().x;
+    float pos_y = end_platform.get()->GetPos().y + 50.0f;
+    float pos_z = end_platform.get()->GetPos().z + 200.0f;
+    Vector3 pos(pos_x, pos_y, pos_z);
+    std::shared_ptr<Terrain> target = std::make_shared<Terrain>("Archery Target", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 9.5f, 0.0f, Vector3(0.06f, 0.06f, 0.06f));
+    //target->SetYaw(20);
+    target->isTarget = true;
+    m_GameObjects.push_back(target);
+    m_ColliderObjects.push_back(target);
 }
 
 // Executes the basic game loop.
@@ -352,9 +376,20 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& _timer)
 {
+    std::cout << std::to_string(points) << std::endl;
     //std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
     float elapsedTime = float(_timer.GetElapsedSeconds());
     m_GD->m_dt = elapsedTime;
+    countdown -= elapsedTime;
+    //std::cout << std::to_string(countdown) << std::endl;
+    string countdown_string = std::to_string(int(countdown)) + "s";
+    timer.get()->SetText(countdown_string);
+
+    if (int(countdown) <= 0) {
+        //transition to end screen
+        m_GD->m_GS = GS_GAME_OVER;
+    }
+
 
     //hand animation when firing
     Fire();
@@ -415,6 +450,10 @@ void Game::Update(DX::StepTimer const& _timer)
         //OutputDebugStringW(std::to_string((*it)->m_pos.x) + " " + std::to_string((*it)->m_pos.y));
         //std::cout << (std::to_string((*it)->m_origin.x) + " " + std::to_string((*it)->m_origin.y));
         (*it)->Tick(m_GD);
+    }
+
+    if (pPlayer.get()->GetPos().y < -200.0f) {
+        pPlayer.get()->SetPos(Vector3(0.0f, 0.0f, 0.0f));
     }
 
     CheckCollision();
@@ -746,6 +785,14 @@ void Game::ReadInput()
 
 void Game::CheckCollision()
 {
+    //if (m_ColliderObjects.size() > 25) {
+    //    for (auto c : m_ColliderObjects) {
+    //        if (c == ) {
+    //
+    //        }
+    //    }
+    //}
+
     collision_count = 0;
     for (int i = 0; i < m_PhysicsObjects.size(); i++) for (int j = 0; j < m_ColliderObjects.size(); j++)
     {
@@ -755,6 +802,9 @@ void Game::CheckCollision()
             auto pos = m_PhysicsObjects[i]->GetPos();
             m_PhysicsObjects[i]->SetPos(pos - eject_vect);
             if(eject_vect.y < 0) collision_count++;
+            if (m_ColliderObjects[j] == end_platform) {
+                GeneratePlatformsRandom(Vector3(end_platform.get()->GetPos()), 10);
+            }
         }
     }
     if (collision_count > 0) {
@@ -775,6 +825,10 @@ void Game::CheckProjectileCollision()
         {
             std::cout << "projectile collision" << std::endl;
             m_ProjectileObjects[i]->SetActive(false);
+            if (m_ColliderObjects[j].get()->isTarget) {
+                m_ColliderObjects[j].get()->SetActive(false);
+                points++;
+            }
         }
     }
 }

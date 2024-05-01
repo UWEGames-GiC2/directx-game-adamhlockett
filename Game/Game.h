@@ -18,6 +18,7 @@
 #include "Terrain.h"
 #include "Projectile.h"
 #include "Player.h"
+#include "TextGO2D.h"
 
 using std::list;
 using namespace std;
@@ -104,10 +105,8 @@ private:
     DX::StepTimer                                   m_timer;
 
     
-    float m_hand_anim_timer = 0;
-    float m_hand_anim_end_time = 1.5;
+    float m_hand_anim_timer = 0, m_hand_anim_end_time = 1.5f, platform_offset = 50.0f;
     int collision_count = 0;
-    float platform_offset = 50.0f;
 
     float camera_bob_counter = 0;
     int camera_bob_multiplier = 1;
@@ -125,6 +124,7 @@ private:
     std::shared_ptr<TPSCamera> m_TPScam = NULL;//TPS cam
     std::shared_ptr<FPSCamera> m_FPScam = NULL;//FPS cam
     Light* m_light = NULL; //base light
+    std::shared_ptr<TextGO2D> timer = NULL;
 
     //required for the CMO model rendering system
     DirectX::CommonStates* m_states = NULL;
@@ -145,8 +145,10 @@ private:
     std::vector<std::shared_ptr<CMOGO>> m_ProjectileObjects;
     std::vector<std::shared_ptr<Terrain>> platforms;
     std::vector<std::shared_ptr<Projectile>> m_projectiles;
+    std::shared_ptr<Terrain> end_platform;
 
-    int platform_count = 5;
+    int platform_count = 5, points = 0, lives = 3;
+    float countdown = 60.0f;
 
     void CheckCollision();
     void CheckProjectileCollision();

@@ -50,7 +50,7 @@ void Player::Tick(GameData* _GameData)
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
 			if ((-abs(int(XMConvertToDegrees(m_yaw) - 85)) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
-			std::cout << std::to_string(-abs(int(XMConvertToDegrees(m_yaw) - 85))) + "\n";
+			//std::cout << std::to_string(-abs(int(XMConvertToDegrees(m_yaw) - 85))) + "\n";
 			
 
 			//if (m_yaw > XMConvertToRadians(rotationBoundsYaw) || m_yaw < XMConvertToRadians(-rotationBoundsYaw)) _pitch = -XMConvertToDegrees(m_pitch);
@@ -65,9 +65,8 @@ void Player::Tick(GameData* _GameData)
 						if (!projectiles[i]->IsActive()) {
 							Vector3 forwardMove = 40.0f * Vector3::Forward;
 							
-							//if(m_yaw >)
 							Matrix rotMove = Matrix::CreateRotationY(m_yaw) * Matrix::CreateRotationX(_pitch);
-							std::cout << std::to_string(XMConvertToDegrees(_pitch)) + " " + std::to_string(XMConvertToDegrees(m_yaw)) << std::endl;
+							//std::cout << std::to_string(XMConvertToDegrees(_pitch)) + " " + std::to_string(XMConvertToDegrees(m_yaw)) << std::endl;
 							forwardMove = Vector3::Transform(forwardMove, rotMove);
 							projectiles[i].get()->SetPos(this->GetPos());
 							projectiles[i].get()->SetActive(true);
@@ -76,14 +75,12 @@ void Player::Tick(GameData* _GameData)
 							projectiles[i].get()->SetRoll(this->GetRoll());
 							projectiles[i].get()->SetDrag(0.01f);
 							projectiles[i].get()->SetPhysicsOn(true);
-							projectiles[i].get()->SetAcceleration(forwardMove * 500.0f);
+							projectiles[i].get()->SetAcceleration(forwardMove * 1000.0f);
 							
 						}
 					}
-
 					_GameData->m_hand_anim = true;
 					m_can_click = false;
-
 				}
 			}
 
@@ -169,7 +166,7 @@ void Player::Tick(GameData* _GameData)
 
 	//limit motion of the player
 	float length = m_pos.Length();
-	float maxLength = 5000.0f;
+	float maxLength = 10000.0f;
 	if (length > maxLength)
 	{
 		m_pos.Normalize();

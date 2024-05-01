@@ -15,7 +15,6 @@ public:
 	~Terrain();
 
 	void Tick(GameData* _GD) override { _GD; };
-
 protected:
 
 };
