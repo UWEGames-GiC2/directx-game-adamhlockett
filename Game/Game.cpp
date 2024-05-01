@@ -334,7 +334,7 @@ void Game::GeneratePlatformsRandom(Vector3 start_pos, int platform_count)
     std::cout << "generate random platforms\n";
     for (int i = 0; i < platform_count; i++) {
         // make random offset
-        float pos_x = start_pos.x +
+        //float pos_x = start_pos.x +
     }
 }
 
@@ -352,7 +352,7 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& _timer)
 {
-    std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
+    //std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
     float elapsedTime = float(_timer.GetElapsedSeconds());
     m_GD->m_dt = elapsedTime;
 

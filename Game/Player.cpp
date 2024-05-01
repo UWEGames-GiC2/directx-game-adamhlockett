@@ -36,12 +36,12 @@ void Player::Tick(GameData* _GameData)
 		//case GS_PLAY_FPS_CAM:
 		//{
 			//TURN AND FORWARD CONTROL HERE
-			
+				
 			Vector3 forwardMove = speed * Vector3::Forward/* * _GameData->m_dt*/;
 			Vector3 sidewardMove = speed * Vector3::Left/* * _GameData->m_dt*/;
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 			auto kb = Keyboard::Get().GetState();
-			auto ms = Mouse::Get().GetState();
+			auto ms = Mouse::Get().GetState(); 
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
 			int rotationBounds = 85;
@@ -49,7 +49,8 @@ void Player::Tick(GameData* _GameData)
 			//std::cout << std::to_string(XMConvertToDegrees(m_yaw)) + "\n";
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
-			if ((int(XMConvertToDegrees(m_yaw) /*- 85*/) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
+			if ((-abs(int(XMConvertToDegrees(m_yaw) - 85)) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
+			std::cout << std::to_string(-abs(int(XMConvertToDegrees(m_yaw) - 85))) + "\n";
 			
 
 			//if (m_yaw > XMConvertToRadians(rotationBoundsYaw) || m_yaw < XMConvertToRadians(-rotationBoundsYaw)) _pitch = -XMConvertToDegrees(m_pitch);

@@ -2,6 +2,7 @@
 #define _PLAYER_H_
 #include "CMOGO.h" 
 #include <iostream>
+#include <string>
 
 //=================================================================
 //Base Player Class (i.e. a GO the player controls)
