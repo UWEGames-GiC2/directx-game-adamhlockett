@@ -110,7 +110,11 @@ void Game::Initialize(HWND _window, int _width, int _height)
     float AR = (float)_width / (float)_height;
 
     //example basic 3D stuff
-    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(2.0f,2.0f,2.0f));
+    //std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(2.0f,20.0f,2.0f));
+    //m_GameObjects.push_back(platform);
+    //m_ColliderObjects.push_back(platform);
+
+    std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(0.0f, -10.0f, 0.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 20.0f, 10.0f));
     m_GameObjects.push_back(platform);
     m_ColliderObjects.push_back(platform);
 
@@ -255,7 +259,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     hand->m_name = "hand";
     m_GameObjects2D.push_back(hand);
 
-    GeneratePlatformsRegular(Vector3(10.0f,0.0f,10.0f), 100.0f, 25);
+    //GeneratePlatformsRegular(Vector3(10.0f,0.0f,10.0f), 100.0f, 25);
 
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
     //bug_test->SetPos(300.0f * Vector2::One);
@@ -304,17 +308,20 @@ void Game::Fire()
 
 void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_count)
 {
+    //std::cout << "generate platforms\n";
     int dimension = int(sqrt(p_count));
+    //std::cout << std::to_string(dimension) << std::endl;
 
-    for (int i = 0; i++; i < p_count) 
+    for (int i = 0; i < dimension; i++) 
     {
-        for (int j = 0; j++; j < p_count) 
+        for (int j = 0; j < dimension; j++) 
         {
             float pos_x = start_pos.x + (grid_offset * i);
             float pos_y = start_pos.y;
             float pos_z = start_pos.z + (grid_offset * j);
             Vector3 pos(pos_x, pos_y, pos_z);
-            std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(2.0f, 2.0f, 2.0f));
+            std::cout << std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
+            std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(4.5f, 2.0f, 4.5f));
             m_GameObjects.push_back(platform);
             m_ColliderObjects.push_back(platform);
         }

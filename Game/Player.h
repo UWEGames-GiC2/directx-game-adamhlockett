@@ -22,7 +22,7 @@ public:
 protected:
 	bool m_can_click = true, m_can_jump = true;
 	float m_can_click_timer = 0, m_max_can_click_timer = 1.5, m_can_jump_timer = 0, m_max_can_jump_timer = 0.2f,
-	speed = 25000.0f, gravity = 50000.0f, jumpspeed = 2000000.0f;
+	speed = 250.0f, gravity = 500.0f, jumpspeed = 10000.0f;
 
 };
 

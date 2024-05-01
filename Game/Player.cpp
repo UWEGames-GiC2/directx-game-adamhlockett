@@ -37,16 +37,24 @@ void Player::Tick(GameData* _GameData)
 		//{
 			//TURN AND FORWARD CONTROL HERE
 			
-			Vector3 forwardMove = speed * Vector3::Forward * _GameData->m_dt;
-			Vector3 sidewardMove = speed * Vector3::Left * _GameData->m_dt;
+			Vector3 forwardMove = speed * Vector3::Forward/* * _GameData->m_dt*/;
+			Vector3 sidewardMove = speed * Vector3::Left/* * _GameData->m_dt*/;
 			Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 			auto kb = Keyboard::Get().GetState();
 			auto ms = Mouse::Get().GetState();
 			forwardMove = Vector3::Transform(forwardMove, rotMove);
 			sidewardMove = Vector3::Transform(sidewardMove, rotMove);
 			int rotationBounds = 85;
+			int rotationBoundsYaw = 90;
+			float _pitch = m_pitch;
+			//std::cout << std::to_string(XMConvertToDegrees(m_yaw)) + "\n";
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
+			if ((int(XMConvertToDegrees(m_yaw) - 85) / 180) % 2 != 0) _pitch = -m_pitch; //std::cout << "true\n"; 
+			
+
+			//if (m_yaw > XMConvertToRadians(rotationBoundsYaw) || m_yaw < XMConvertToRadians(-rotationBoundsYaw)) _pitch = -XMConvertToDegrees(m_pitch);
+			//else _pitch = XMConvertToDegrees(m_pitch);
 			
 			//std::cout << std::to_string(m_yaw) << std::endl;
 			if (ms.leftButton)
@@ -56,9 +64,10 @@ void Player::Tick(GameData* _GameData)
 					for (size_t i = 0; i < projectiles.size(); i++) {
 						if (!projectiles[i]->IsActive()) {
 							Vector3 forwardMove = 40.0f * Vector3::Forward;
-							float _pitch = m_pitch;
+							
 							//if(m_yaw >)
 							Matrix rotMove = Matrix::CreateRotationY(m_yaw) * Matrix::CreateRotationX(_pitch);
+							std::cout << std::to_string(XMConvertToDegrees(_pitch)) + " " + std::to_string(XMConvertToDegrees(m_yaw)) << std::endl;
 							forwardMove = Vector3::Transform(forwardMove, rotMove);
 							projectiles[i].get()->SetPos(this->GetPos());
 							projectiles[i].get()->SetActive(true);
@@ -67,7 +76,8 @@ void Player::Tick(GameData* _GameData)
 							projectiles[i].get()->SetRoll(this->GetRoll());
 							projectiles[i].get()->SetDrag(0.01f);
 							projectiles[i].get()->SetPhysicsOn(true);
-							projectiles[i].get()->SetAcceleration(forwardMove * 1000.0f);
+							projectiles[i].get()->SetAcceleration(forwardMove * 500.0f);
+							
 						}
 					}
 
@@ -100,7 +110,7 @@ void Player::Tick(GameData* _GameData)
 			if (kb.Space)
 			{
 				if (_GameData->m_can_jump && m_can_jump) {
-					m_acc.y += jumpspeed * _GameData->m_dt;
+					m_acc.y += jumpspeed/* * _GameData->m_dt*/;
 					_GameData->m_can_jump = false;
 					m_can_jump = false;
 				}
@@ -108,7 +118,7 @@ void Player::Tick(GameData* _GameData)
 
 
 			if (_GameData->gravity_on) {
-				m_acc.y -= gravity * _GameData->m_dt;
+				m_acc.y -= gravity/* * _GameData->m_dt*/;
 			}
 			
 			if (!m_can_click) {
@@ -127,8 +137,8 @@ void Player::Tick(GameData* _GameData)
 				}
 			}
 			
-			float sensitivity = 0.5f;
-			float rotSpeed = sensitivity * _GameData->m_dt;
+			float sensitivity = 0.005f;
+			float rotSpeed = sensitivity /** _GameData->m_dt*/;
 			m_yaw -= rotSpeed * _GameData->m_MS.x;
 			m_pitch -= rotSpeed * _GameData->m_MS.y;
 			//break;
