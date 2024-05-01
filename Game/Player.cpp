@@ -48,7 +48,7 @@ void Player::Tick(GameData* _GameData)
 			if (m_pitch > XMConvertToRadians(rotationBounds)) m_pitch = XMConvertToRadians(rotationBounds);
 			if (m_pitch < XMConvertToRadians(-rotationBounds)) m_pitch = XMConvertToRadians(-rotationBounds);
 			
-			std::cout << std::to_string(m_yaw) << std::endl;
+			//std::cout << std::to_string(m_yaw) << std::endl;
 			if (ms.leftButton)
 			{
 				if (m_can_click) {

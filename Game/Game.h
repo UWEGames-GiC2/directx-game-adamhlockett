@@ -84,6 +84,8 @@ private:
     void OnDeviceLost();
 
     void Fire();
+    void GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int platform_count);
+    void GeneratePlatformsRandom(Vector3 start_pos, float grid_offset);
 
     // Device resources.
     HWND                                            m_window;

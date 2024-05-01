@@ -116,12 +116,12 @@ void Game::Initialize(HWND _window, int _width, int _height)
 
     for (int i = 0; i < platform_count; i++) {
         std::shared_ptr<Terrain> p = std::make_shared<Terrain>("round platform", m_d3dDevice.Get(), m_fxFactory, Vector3(i * (platform_offset) + 100.0f, -100.0f, i * (platform_offset) + 100.0f), 0.0f, 0.0f, 0.0f, Vector3(10.0f, 10.0f, 10.0f));
-        platforms.push_back(p);
+        //platforms.push_back(p);
+        m_GameObjects.push_back(p);
+        m_ColliderObjects.push_back(p);
     }
-    for (std::shared_ptr<Terrain> plat : platforms) {
-        m_GameObjects.push_back(plat);
-        m_ColliderObjects.push_back(plat);
-    }
+    //for (std::shared_ptr<Terrain> plat : platforms) {
+    //}
    
     ////L-system like tree
     //m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f * Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up", m_d3dDevice.Get(), m_fxFactory));
@@ -255,6 +255,8 @@ void Game::Initialize(HWND _window, int _width, int _height)
     hand->m_name = "hand";
     m_GameObjects2D.push_back(hand);
 
+    GeneratePlatformsRegular(Vector3(10.0f,0.0f,10.0f), 100.0f, 25);
+
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
     //bug_test->SetPos(300.0f * Vector2::One);
     //m_GameObjects2D.push_back(bug_test);
@@ -296,6 +298,25 @@ void Game::Fire()
         if (m_hand_anim_timer >= m_hand_anim_end_time) {
             m_GD->m_hand_anim = false;
             m_hand_anim_timer = 0;
+        }
+    }
+}
+
+void Game::GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int p_count)
+{
+    int dimension = int(sqrt(p_count));
+
+    for (int i = 0; i++; i < p_count) 
+    {
+        for (int j = 0; j++; j < p_count) 
+        {
+            float pos_x = start_pos.x + (grid_offset * i);
+            float pos_y = start_pos.y;
+            float pos_z = start_pos.z + (grid_offset * j);
+            Vector3 pos(pos_x, pos_y, pos_z);
+            std::shared_ptr<Terrain> platform = std::make_shared<Terrain>("floor_4x4_free", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 0.0f, 0.0f, Vector3(2.0f, 2.0f, 2.0f));
+            m_GameObjects.push_back(platform);
+            m_ColliderObjects.push_back(platform);
         }
     }
 }
