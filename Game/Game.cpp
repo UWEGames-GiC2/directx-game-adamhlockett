@@ -351,6 +351,21 @@ void Game::ReInitialize()
     std::shared_ptr<Light> m_light = std::make_shared<Light>(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
     m_GameObjects.push_back(m_light);
 
+    //find how big my window is to correctly calculate my aspect ratio
+    float AR = (float)m_outputWidth / (float)m_outputHeight;
+    //create a base camera
+    m_cam = std::make_shared<Camera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
+    m_cam->SetPos(Vector3(0.0f, 200.0f, 200.0f));
+    m_GameObjects.push_back(m_cam);
+
+    //add a secondary camera
+    m_TPScam = std::make_shared<TPSCamera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 100.0f, 50.0f));
+    m_GameObjects.push_back(m_TPScam);
+
+    //add first person camera
+    m_FPScam = std::make_shared<FPSCamera>(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 0.0f, 0.1f));
+    m_GameObjects.push_back(m_FPScam);
+
 
     //example basic 2D stuff
     std::shared_ptr<ImageGO2D> hand = std::make_shared<ImageGO2D>("hand", m_d3dDevice.Get());
