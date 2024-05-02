@@ -8,7 +8,7 @@ Player::Player(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF)
 	//any special set up for Player goes here
 	m_fudge = Matrix::CreateRotationY(XM_PI);
 
-	m_pos.y = 200.0f;
+	m_pos.y = 0.0f;
 
 	SetDrag(3);
 	SetPhysicsOn(true);
@@ -114,7 +114,7 @@ void Player::Tick(GameData* _GameData)
 			}
 
 
-			if (_GameData->gravity_on) {
+			if (_GameData->gravity_on && _GameData->m_GS != GS_MAIN_MENU) {
 				m_acc.y -= gravity/* * _GameData->m_dt*/;
 			}
 			

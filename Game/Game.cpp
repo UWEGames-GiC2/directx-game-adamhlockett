@@ -240,7 +240,6 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_DD->m_cam = m_cam.get();
     m_DD->m_light = m_light.get();
 
-
     //example basic 2D stuff
     std::shared_ptr<ImageGO2D> hand = std::make_shared<ImageGO2D>("hand", m_d3dDevice.Get());
     Vector2 hand_image_origin(875, 875);
@@ -251,6 +250,7 @@ void Game::Initialize(HWND _window, int _width, int _height)
     m_GameObjects2D.push_back(hand);
 
     timer = std::make_shared<TextGO2D>("60.0s");
+    timer->SetActive(false);
     //timer->SetPos(Vector2(20, 20));
     //timer->SetColour(Color((float*)&Colors::Tomato));
     m_GameObjects2D.push_back(timer);
@@ -259,6 +259,57 @@ void Game::Initialize(HWND _window, int _width, int _height)
     GeneratePlatformsRandom(Vector3(100.0f, -20.0f, 250.0f), 10);
 
     pPlayer.get()->SetYaw(-27000);
+
+    help1 = std::make_shared<TextGO2D>("WASD TO MOVE, LEFT MOUSE TO SHOOT");
+    m_GameObjects2D.push_back(help1);
+    help_vec.push_back(help1);
+
+    help2 = std::make_shared<TextGO2D>("SPACE TO JUMP OR DOUBLE JUMP");
+    help2->SetPos(Vector2(0.0f, 50.0f));
+    m_GameObjects2D.push_back(help2);
+    help_vec.push_back(help2);
+
+    help3 = std::make_shared<TextGO2D>("R TO CHANGE CAMERA");
+    help3->SetPos(Vector2(0.0f, 100.0f));
+    m_GameObjects2D.push_back(help3);
+    help_vec.push_back(help3);
+
+    help4 = std::make_shared<TextGO2D>("shoot the targets for points");
+    help4->SetPos(Vector2(0.0f, 150.0f));
+    m_GameObjects2D.push_back(help4);
+    help_vec.push_back(help4);
+
+    help5 = std::make_shared<TextGO2D>("see how many points you can get in a minute");
+    help5->SetPos(Vector2(0.0f, 200.0f));
+    m_GameObjects2D.push_back(help5);
+    help_vec.push_back(help5);
+
+    help6 = std::make_shared<TextGO2D>("reach the end of the platforms to generate more");
+    help6->SetPos(Vector2(0.0f, 250.0f));
+    m_GameObjects2D.push_back(help6);
+    help_vec.push_back(help6);
+
+    help7 = std::make_shared<TextGO2D>("ENTER TO PLAY");
+    help7->SetPos(Vector2(0.0f, 300.0f));
+    m_GameObjects2D.push_back(help7);
+    help_vec.push_back(help7);
+
+    end1 = std::make_shared<TextGO2D>("TIMES UP, YOUR SCORE WAS:");
+    end1->SetActive(false);
+    m_GameObjects2D.push_back(end1);
+    end_vec.push_back(end1);
+
+    end2 = std::make_shared<TextGO2D>("00");
+    end2->SetActive(false);
+    end2->SetPos(Vector2(0.0f, 50.0f));
+    m_GameObjects2D.push_back(end2);
+    end_vec.push_back(end2);
+
+    end3 = std::make_shared<TextGO2D>("ENTER TO PLAY AGAIN");
+    end3->SetActive(false);
+    end3->SetPos(Vector2(0.0f, 100.0f));
+    m_GameObjects2D.push_back(end3);
+    end_vec.push_back(end3);
 
     //ImageGO2D* bug_test = new ImageGO2D("bug_test", m_d3dDevice.Get());
     //bug_test->SetPos(300.0f * Vector2::One);
@@ -275,6 +326,100 @@ void Game::Initialize(HWND _window, int _width, int _height)
     //
     //TestSound* TS = new TestSound(m_audioEngine.get(), "Explo1");
     //m_Sounds.push_back(TS);
+
+}
+
+void Game::ReInitialize()
+{
+    //create a set of dummy things to show off the engine
+
+    for (size_t i = 0; i < 10; i++) {
+        std::shared_ptr<Projectile> proj = std::make_shared<Projectile>("capsule", m_d3dDevice.Get(), m_fxFactory);
+        proj->SetActive(false);
+        m_GameObjects.push_back(proj);
+        m_ProjectileObjects.push_back(proj);
+    }
+
+    pPlayer = std::make_shared<Player>("steve", m_d3dDevice.Get(), m_fxFactory);
+    //pPlayer->m_name = "player";
+    //pPlayer->isRendered = false;
+    m_GameObjects.push_back(pPlayer);
+    m_PhysicsObjects.push_back(pPlayer);
+    pPlayer.get()->projectiles = m_ProjectileObjects;
+
+    //create a base light
+    std::shared_ptr<Light> m_light = std::make_shared<Light>(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
+    m_GameObjects.push_back(m_light);
+
+
+    //example basic 2D stuff
+    std::shared_ptr<ImageGO2D> hand = std::make_shared<ImageGO2D>("hand", m_d3dDevice.Get());
+    Vector2 hand_image_origin(875, 875);
+    hand->SetOrigin(hand_image_origin);
+    hand->SetScale(Vector2::One);
+    hand->SetPos(/*200.0f * Vector2::One*/Vector2(m_outputWidth, m_outputHeight));
+    hand->m_name = "hand";
+    m_GameObjects2D.push_back(hand);
+
+    timer = std::make_shared<TextGO2D>("60.0s");
+    timer->SetActive(false);
+    m_GameObjects2D.push_back(timer);
+
+    GeneratePlatformsRegular(Vector3(10.0f, -10.0f, 10.0f), 100.0f, 4);
+    GeneratePlatformsRandom(Vector3(100.0f, -20.0f, 250.0f), 10);
+
+    pPlayer.get()->SetYaw(-27000);
+
+    help1 = std::make_shared<TextGO2D>("WASD TO MOVE, LEFT MOUSE TO SHOOT");
+    m_GameObjects2D.push_back(help1);
+    help_vec.push_back(help1);
+
+    help2 = std::make_shared<TextGO2D>("SPACE TO JUMP OR DOUBLE JUMP");
+    help2->SetPos(Vector2(0.0f, 50.0f));
+    m_GameObjects2D.push_back(help2);
+    help_vec.push_back(help2);
+
+    help3 = std::make_shared<TextGO2D>("R TO CHANGE CAMERA");
+    help3->SetPos(Vector2(0.0f, 100.0f));
+    m_GameObjects2D.push_back(help3);
+    help_vec.push_back(help3);
+
+    help4 = std::make_shared<TextGO2D>("shoot the targets for points");
+    help4->SetPos(Vector2(0.0f, 150.0f));
+    m_GameObjects2D.push_back(help4);
+    help_vec.push_back(help4);
+
+    help5 = std::make_shared<TextGO2D>("see how many points you can get in a minute");
+    help5->SetPos(Vector2(0.0f, 200.0f));
+    m_GameObjects2D.push_back(help5);
+    help_vec.push_back(help5);
+
+    help6 = std::make_shared<TextGO2D>("reach the end of the platforms to generate more");
+    help6->SetPos(Vector2(0.0f, 250.0f));
+    m_GameObjects2D.push_back(help6);
+    help_vec.push_back(help6);
+
+    help7 = std::make_shared<TextGO2D>("ENTER TO PLAY");
+    help7->SetPos(Vector2(0.0f, 300.0f));
+    m_GameObjects2D.push_back(help7);
+    help_vec.push_back(help7);
+
+    end1 = std::make_shared<TextGO2D>("TIMES UP, YOUR SCORE WAS:");
+    end1->SetActive(false);
+    m_GameObjects2D.push_back(end1);
+    end_vec.push_back(end1);
+
+    end2 = std::make_shared<TextGO2D>("00");
+    end2->SetActive(false);
+    end2->SetPos(Vector2(0.0f, 50.0f));
+    m_GameObjects2D.push_back(end2);
+    end_vec.push_back(end2);
+
+    end3 = std::make_shared<TextGO2D>("ENTER TO PLAY AGAIN");
+    end3->SetActive(false);
+    end3->SetPos(Vector2(0.0f, 100.0f));
+    m_GameObjects2D.push_back(end3);
+    end_vec.push_back(end3);
 }
 
 //void Game::FireProjectile() 
@@ -355,7 +500,7 @@ void Game::GeneratePlatformsRandom(Vector3 start_pos, int platform_count)
     float pos_y = end_platform.get()->GetPos().y + 50.0f;
     float pos_z = end_platform.get()->GetPos().z + 200.0f;
     Vector3 pos(pos_x, pos_y, pos_z);
-    std::shared_ptr<Terrain> target = std::make_shared<Terrain>("Archery Target", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 9.5f, 0.0f, Vector3(0.06f, 0.06f, 0.06f));
+    std::shared_ptr<Terrain> target = std::make_shared<Terrain>("Archery Target", m_d3dDevice.Get(), m_fxFactory, pos, 0.0f, 9.5f, 0.0f, Vector3(0.06f, 0.06f, 1.0f));
     //target->SetYaw(20);
     target->isTarget = true;
     m_GameObjects.push_back(target);
@@ -376,23 +521,10 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& _timer)
 {
-    std::cout << std::to_string(points) << std::endl;
-    //std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
-    float elapsedTime = float(_timer.GetElapsedSeconds());
-    m_GD->m_dt = elapsedTime;
-    countdown -= elapsedTime;
-    //std::cout << std::to_string(countdown) << std::endl;
-    string countdown_string = std::to_string(int(countdown)) + "s";
-    timer.get()->SetText(countdown_string);
-
-    if (int(countdown) <= 0) {
-        //transition to end screen
-        m_GD->m_GS = GS_GAME_OVER;
+    if (first_frame) {
+        m_GD->m_GS = GS_MAIN_MENU;
+        first_frame = false;
     }
-
-
-    //hand animation when firing
-    Fire();
 
     //p_current_pos = { pPlayer->GetPos().x , pPlayer.get()->GetPos().y };
     //
@@ -426,21 +558,6 @@ void Game::Update(DX::StepTimer const& _timer)
     }
 
     ReadInput();
-    //upon space bar switch camera state
-    //see docs here for what's going on: https://github.com/Microsoft/DirectXTK/wiki/Keyboard
-    if (m_GD->m_KBS_tracker.pressed.R)
-    {
-        if (m_GD->m_GS == GS_PLAY_TPS_CAM)
-        {
-            m_GD->m_GS = GS_PLAY_FPS_CAM;
-        }
-        else
-        {
-            m_GD->m_GS = GS_PLAY_TPS_CAM;
-        }
-    }
-
-    //update all objects
     for (vector<std::shared_ptr<GameObject>>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
     {
         (*it)->Tick(m_GD);
@@ -452,12 +569,80 @@ void Game::Update(DX::StepTimer const& _timer)
         (*it)->Tick(m_GD);
     }
 
+
+
+    if (m_GD->m_GS == GS_MAIN_MENU) {
+        //set text is active
+        for (auto text : help_vec) {
+            text.get()->SetActive(true);
+        }
+        points = 0;
+        countdown = 60.0f;
+        for (auto text : end_vec) {
+            text.get()->SetActive(false);
+        }
+        pPlayer.get()->SetPos(Vector3(0.0f, 0.0f, 0.0f));
+    }
+
+    if (m_GD->m_GS == GS_PLAY_FPS_CAM) {
+        //set cover image to not active
+        //set text is not active
+        timer->SetActive(true);
+        for (auto text : help_vec) {
+            text.get()->SetActive(false);
+        }
+    }
+    if (m_GD->m_GS == GS_GAME_OVER) {
+        timer->SetActive(false);
+        end2.get()->SetText(std::to_string(points));
+        for (auto text : end_vec) {
+            text.get()->SetActive(true);
+        }
+        pPlayer.get()->SetPos(Vector3(0.0f, 0.0f, 0.0f));
+    }
+
+    //std::cout << std::to_string(points) << std::endl;
+    //std::cout << std::to_string(int(pPlayer.get()->GetPos().x)) + " " + std::to_string(int(pPlayer.get()->GetPos().z)) + "\n";
+    float elapsedTime = float(_timer.GetElapsedSeconds());
+    m_GD->m_dt = elapsedTime;
+    if(m_GD->m_GS != GS_MAIN_MENU) countdown -= elapsedTime;
+    //std::cout << std::to_string(countdown) << std::endl;
+    string countdown_string = std::to_string(int(countdown)) + "s";
+    timer.get()->SetText(countdown_string);
+
+    if (int(countdown) <= 0) {
+        //transition to end screen
+        m_GD->m_GS = GS_GAME_OVER;
+    }
+
+
+    //hand animation when firing
+    Fire();
+    //upon space bar switch camera state
+    //see docs here for what's going on: https://github.com/Microsoft/DirectXTK/wiki/Keyboard
+    if (m_GD->m_KBS_tracker.pressed.R)
+    {
+        if (m_GD->m_GS == GS_PLAY_TPS_CAM)
+        {
+            m_GD->m_GS = GS_PLAY_FPS_CAM;
+        }
+        else if (m_GD->m_GS == GS_PLAY_FPS_CAM)
+        {
+            m_GD->m_GS = GS_PLAY_TPS_CAM;
+        }
+    }
+
+    //update all objects
+
+    //respawn
     if (pPlayer.get()->GetPos().y < -200.0f) {
         pPlayer.get()->SetPos(Vector3(0.0f, 0.0f, 0.0f));
     }
 
     CheckCollision();
     CheckProjectileCollision();
+
+
 }
 
 // Draws the scene.
@@ -501,7 +686,9 @@ void Game::Render()
     m_DD2D->m_Sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
     for (std::vector<std::shared_ptr<GameObject2D>>::iterator it = m_GameObjects2D.begin(); it != m_GameObjects2D.end(); it++)
     {
-        (*it)->Draw(m_DD2D);
+        if ((*it)->IsActive()) {
+            (*it)->Draw(m_DD2D);
+        }
     }
     m_DD2D->m_Sprites->End();
 
@@ -773,6 +960,23 @@ void Game::ReadInput()
     if (m_GD->m_KBS.Escape)
     {
         ExitGame();
+    }
+    if (m_GD->m_GS == GS_MAIN_MENU && m_GD->m_KBS.Enter)
+    {
+        m_GD->m_GS = GS_PLAY_FPS_CAM;
+    }
+    if (m_GD->m_GS == GS_GAME_OVER && m_GD->m_KBS.Enter) {
+        m_ColliderObjects.clear();
+        m_PhysicsObjects.clear();
+        m_ProjectileObjects.clear();
+        platforms.clear();
+        m_projectiles.clear();
+        m_GameObjects.clear();
+        m_GameObjects2D.clear();
+        help_vec.clear();
+        end_vec.clear();
+        ReInitialize();
+        m_GD->m_GS = GS_MAIN_MENU;
     }
 
     m_GD->m_MS = m_mouse->GetState();

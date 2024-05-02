@@ -24,6 +24,7 @@ public:
 
 	virtual void Tick(GameData* _GD) = 0;
 	virtual void Draw(DrawData2D* _DD) = 0;
+	bool		IsActive() { return m_isActive; }
 
 	//setters
 
@@ -37,10 +38,12 @@ public:
 	Vector2 m_origin;
 	float m_rotation;
 	string m_name;
+	void		SetActive(bool _active) { m_isActive = _active; }
 
 protected:
 	Vector2 m_scale;
 	Color m_colour;
+	bool m_isActive = true;
 
 };
 

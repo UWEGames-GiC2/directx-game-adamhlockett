@@ -52,6 +52,7 @@ public:
 
     // Initialization and management
     void Initialize(HWND _window, int _width, int _height);
+    void ReInitialize();
 
     // Basic game loop
     void Tick();
@@ -108,6 +109,8 @@ private:
     float m_hand_anim_timer = 0, m_hand_anim_end_time = 1.5f, platform_offset = 50.0f;
     int collision_count = 0;
 
+    bool first_frame = true;
+
     float camera_bob_counter = 0;
     int camera_bob_multiplier = 1;
     Vector2 p_current_pos;
@@ -125,6 +128,18 @@ private:
     std::shared_ptr<FPSCamera> m_FPScam = NULL;//FPS cam
     Light* m_light = NULL; //base light
     std::shared_ptr<TextGO2D> timer = NULL;
+    std::shared_ptr<TextGO2D> help1 = NULL;
+    std::shared_ptr<TextGO2D> help2 = NULL;
+    std::shared_ptr<TextGO2D> help3 = NULL;
+    std::shared_ptr<TextGO2D> help4 = NULL;
+    std::shared_ptr<TextGO2D> help5 = NULL;
+    std::shared_ptr<TextGO2D> help6 = NULL;
+    std::shared_ptr<TextGO2D> help7 = NULL;
+    std::vector<std::shared_ptr<TextGO2D>> help_vec;
+    std::shared_ptr<TextGO2D> end1 = NULL;
+    std::shared_ptr<TextGO2D> end2 = NULL;
+    std::shared_ptr<TextGO2D> end3 = NULL;
+    std::vector<std::shared_ptr<TextGO2D>> end_vec;
 
     //required for the CMO model rendering system
     DirectX::CommonStates* m_states = NULL;
