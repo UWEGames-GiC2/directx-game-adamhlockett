@@ -24,6 +24,7 @@ public:
 
 	virtual void Tick(GameData* _GD) = 0;
 	virtual void Draw(DrawData2D* _DD) = 0;
+	bool		IsActive() { return m_isActive; }
 
 	//setters
 
@@ -33,13 +34,16 @@ public:
 	void SetScale(Vector2 _scale) { m_scale = _scale; }
 	void SetScale(float _scale) { m_scale = _scale * Vector2::One; }
 	void SetOrigin(Vector2 _origin) { m_origin = _origin; }
+	Vector2 m_pos;
+	Vector2 m_origin;
+	float m_rotation;
+	string m_name;
+	void		SetActive(bool _active) { m_isActive = _active; }
 
 protected:
-	Vector2 m_pos;
-	float m_rotation;
 	Vector2 m_scale;
 	Color m_colour;
-	Vector2 m_origin;
+	bool m_isActive = true;
 
 };
 

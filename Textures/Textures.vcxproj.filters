@@ -5,4 +5,7 @@
     <ImageContentTask Include="grass.jpg" />
     <ImageContentTask Include="white.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\adam\Downloads\textures\steve.png" />
+  </ItemGroup>
 </Project>

@@ -33,8 +33,12 @@ public:
 	float		GetYaw() { return m_yaw; }
 	float		GetRoll() { return m_roll; }
 
+	Matrix& getWorldTransform() { return m_worldMat; }
+	const Matrix& getWorldTransform() const { return m_worldMat; }
+
 	bool		IsPhysicsOn() { return m_physicsOn; }
 	float		GetDrag() { return m_drag; }
+	bool		IsActive() { return m_isActive; }
 
 	//setters
 	void		SetPos(Vector3 _pos) { m_pos = _pos; }
@@ -51,8 +55,11 @@ public:
 	void		SetPhysicsOn(bool _physics) { m_physicsOn = _physics; }
 	void		TogglePhysics() { m_physicsOn = !m_physicsOn; }
 	void		SetDrag(float _drag) { m_drag = _drag; }
+	void		SetActive(bool _active) { m_isActive = _active; }
+	void		SetAcceleration(Vector3 _acceleration) { m_acc = _acceleration; m_vel = Vector3::Zero; }
 
 	bool isRendered = true;
+	//string m_name;
 
 protected:
 
@@ -69,6 +76,7 @@ protected:
 	float m_drag = 0.0f;
 	Vector3 m_vel = Vector3::Zero;
 	Vector3 m_acc = Vector3::Zero;
+	bool m_isActive = true;
 	
 };
 

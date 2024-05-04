@@ -11,8 +11,17 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Audio.h"
+#include "CMOGO.h"
+#include <string>
+#include <iostream>
+#include <math.h>
+#include "Terrain.h"
+#include "Projectile.h"
+#include "Player.h"
+#include "TextGO2D.h"
 
 using std::list;
+using namespace std;
 
 // Forward declarations
 struct GameData;
@@ -44,6 +53,7 @@ public:
     // Initialization and management
     void InitMenu(HWND _window, int _width, int _height);
     void Initialize(HWND _window, int _width, int _height);
+    void ReInitialize();
 
     // Basic game loop
     void Tick();
@@ -58,11 +68,14 @@ public:
     // Properties
     void GetDefaultSize( int& _width, int& _height ) const noexcept;
 
+    //void FireProjectile();
+
+    void Update(DX::StepTimer const& _timer);
+
+    //bool m_start_hand_anim = false;
 
 private:
 
-    void MenuUpdate(DX::StepTimer const& _timer);
-    void Update(DX::StepTimer const& _timer);
     void Render();
 
     void Clear();
@@ -72,6 +85,10 @@ private:
     void CreateResources();
 
     void OnDeviceLost();
+
+    void Fire();
+    void GeneratePlatformsRegular(Vector3 start_pos, float grid_offset, int platform_count);
+    void GeneratePlatformsRandom(Vector3 start_pos, int platform_count);
 
     // Device resources.
     HWND                                            m_window;
@@ -89,16 +106,41 @@ private:
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
 
+    
+    float m_hand_anim_timer = 0, m_hand_anim_end_time = 1.5f, platform_offset = 50.0f;
+    int collision_count = 0;
+
+    bool first_frame = true;
+
+    float camera_bob_counter = 0;
+    int camera_bob_multiplier = 1;
+    Vector2 p_current_pos;
+    Vector2 p_last_pos;
+
     //Scarle Added stuff
     GameData* m_GD = NULL;			//Data to be shared to all Game Objects as they are ticked
     DrawData* m_DD = NULL;			//Data to be shared to all 3D Game Objects as they are drawn
     DrawData2D* m_DD2D = NULL;	    //Data to be passed by game to all 2D Game Objects via Draw 
 
     //Basic 3D renderers
-    Camera* m_cam = NULL; //principle camera
-    TPSCamera* m_TPScam = NULL;//TPS cam
-    FPSCamera* m_FPScam = NULL;//FPS cam
+    std::shared_ptr<Player> pPlayer = NULL;
+    std::shared_ptr<Camera> m_cam = NULL; //principle camera
+    std::shared_ptr<TPSCamera> m_TPScam = NULL;//TPS cam
+    std::shared_ptr<FPSCamera> m_FPScam = NULL;//FPS cam
     Light* m_light = NULL; //base light
+    std::shared_ptr<TextGO2D> timer = NULL;
+    std::shared_ptr<TextGO2D> help1 = NULL;
+    std::shared_ptr<TextGO2D> help2 = NULL;
+    std::shared_ptr<TextGO2D> help3 = NULL;
+    std::shared_ptr<TextGO2D> help4 = NULL;
+    std::shared_ptr<TextGO2D> help5 = NULL;
+    std::shared_ptr<TextGO2D> help6 = NULL;
+    std::shared_ptr<TextGO2D> help7 = NULL;
+    std::vector<std::shared_ptr<TextGO2D>> help_vec;
+    std::shared_ptr<TextGO2D> end1 = NULL;
+    std::shared_ptr<TextGO2D> end2 = NULL;
+    std::shared_ptr<TextGO2D> end3 = NULL;
+    std::vector<std::shared_ptr<TextGO2D>> end_vec;
 
     //required for the CMO model rendering system
     DirectX::CommonStates* m_states = NULL;
@@ -109,12 +151,24 @@ private:
     std::unique_ptr<DirectX::Keyboard> m_keyboard;
     std::unique_ptr<DirectX::Mouse> m_mouse;
 
-    list<GameObject*> m_GameObjects; //data structure to hold pointers to the 3D Game Objects
-    list<GameObject*> m_MenuObjects;
-    //std::Vector<GameObject*> m_MenuObjects
-    list<GameObject2D*> m_GameObjects2D; //data structure to hold pointers to the 2D Game Objects 
-    list<GameObject2D*> m_MenuObjects2D;
+    std::vector<std::shared_ptr<GameObject>> m_GameObjects; //data structure to hold pointers to the 3D Game Objects
+    //list<GameObject2D*> m_GameObjects2D; //data structure to hold pointers to the 2D Game Objects 
+    //std::vector<std::shared_ptr<GameObject>> m_GameObjects;
+    std::vector<std::shared_ptr<GameObject2D>> m_GameObjects2D;
 
+    std::vector<std::shared_ptr<CMOGO>> m_ColliderObjects;
+    std::vector<std::shared_ptr<CMOGO>> m_PhysicsObjects;
+    std::vector<std::shared_ptr<CMOGO>> m_ProjectileObjects;
+    std::vector<std::shared_ptr<Terrain>> platforms;
+    std::vector<std::shared_ptr<Projectile>> m_projectiles;
+    std::shared_ptr<Terrain> end_platform;
+
+    int platform_count = 5, points = 0, lives = 3;
+    float countdown = 60.0f;
+
+    void CheckCollision();
+    void CheckProjectileCollision();
+    
     //sound stuff
 	//This uses a simple system, but a better pipeline can be used using Wave Banks
 	//See here: https://github.com/Microsoft/DirectXTK/wiki/Creating-and-playing-sounds Using wave banks Section

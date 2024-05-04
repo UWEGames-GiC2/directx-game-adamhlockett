@@ -8,6 +8,7 @@
 #include "GameState.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+//#include "Game.h"
 
 using namespace DirectX;
 
@@ -21,5 +22,10 @@ struct GameData
 	Keyboard::State m_KBS;
 	Mouse::State m_MS;
 	Keyboard::KeyboardStateTracker m_KBS_tracker;
+	//Game game;
+	bool m_hand_anim, gravity_on = true, m_can_jump = true;
+
+	//void FireProj() { game.FireProjectile(); };
+
 };
 #endif
